@@ -1,0 +1,7 @@
+.clik.yaml
+aliases.ini
+build/
+clik.egg-info/
+clik.pyc
+dist/
+venv/

@@ -6,7 +6,8 @@ setup (
         py_modules=['clik'],
         install_requires=[
             'Click',
-            'pyyaml'
+            'pyyaml',
+            'beautifultable'
         ],
         entry_points='''
             [console_scripts]
