@@ -7,8 +7,7 @@ setup (
         install_requires=[
             'Click',
             'pyyaml',
-            'terminaltables',
-            'textwrap'
+            'terminaltables'
         ],
         entry_points='''
             [console_scripts]
