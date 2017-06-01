@@ -71,73 +71,67 @@ def read_config(ctx, param, value):
 
 @click.command(cls=AliasedGroup)
 def cli():
-    """ CLIK CLI personal kanban """
+    """clik CLI personal kanban """
 
 @cli.command()
-@click.option('--todo', prompt=True)
-def new(todo):
-    """Create new todo"""
-    click.echo('Creating new todo w/ %s' % todo)
-    config = read_config_yaml()
-    dd = read_data(config)
-    #print "DD: %r" % dd
-    od = collections.OrderedDict(sorted(dd.items()))
-    #print "ID: %r" % od
-
-    print "New: %r" % {next(reversed(od))+1:['todo', todo]}
-    dd[next(reversed(od))+1] = ['todo', todo]
-    print "DD: %r" % dd
-    write_data(config, dd)
+@click.option('--task', prompt=True)
+def new(task):
+    """Create new task"""
+    if len(task) > 40:
+        click.echo('Task must be shorter than 40 chars')
+    else:
+        click.echo('Creating new task w/ %s' % task)
+        config = read_config_yaml()
+        dd = read_data(config)
+        od = collections.OrderedDict(sorted(dd['data'].items()))
+        dd['data'].update({next(reversed(od))+1:['todo', task]})
+        write_data(config, dd)
 
 @cli.command()
 @click.option('--id', prompt=True)
 def remove(id):
-    """Remove todo"""
+    """Remove task"""
     config = read_config_yaml()
     dd = read_data(config)
-    click.echo('Remove todo: %r' % dd.get(int(id)))
-    dd.pop(int(id))
+    click.echo('Remove task: %r' % dd['data'].get(int(id)))
+    dd['deleted'] = {int(id): dd['data'].get(int(id))}
+    dd['data'].pop(int(id))
     write_data(config, dd)
 
 @cli.command()
 @click.option('--id', prompt=True)
 def promote(id):
-    """Promote todo"""
+    """Promote task"""
     config = read_config_yaml()
     dd = read_data(config)
-    item = dd.get(int(id))
-    print item
+    item = dd['data'].get(int(id))
     if item[0] == 'todo':
-        click.echo('Promoting todo %s to in-progress.' % id)
-        dd[int(id)] = ['inprogress', item[1]]
+        click.echo('Promoting task %s to in-progress.' % id)
+        dd['data'][int(id)] = ['inprogress', item[1]]
         write_data(config, dd)
-
     elif item[0] == 'inprogress':
-        click.echo('Promoting todo %s to done.' % id)
-        dd[int(id)] = ['done', item[1]]
+        click.echo('Promoting task %s to done.' % id)
+        dd['data'][int(id)] = ['done', item[1]]
         write_data(config, dd)
-
     else:
         click.echo('Already done, can not promote %s' % id)
 
 @cli.command()
 @click.option('--id', prompt=True)
 def regress(id):
-    """Regress todo"""
+    """Regress task"""
     config = read_config_yaml()
     dd = read_data(config)
     item = dd.get(int(id))
     print item
     if item[0] == 'done':
-        click.echo('Regressing todo %s to in-progress.' % id)
-        dd[int(id)] = ['inprogress', item[1]]
+        click.echo('Regressing task %s to in-progress.' % id)
+        dd['data'][int(id)] = ['inprogress', item[1]]
         write_data(config, dd)
-
     elif item[0] == 'inprogress':
-        click.echo('Regressing todo %s to todo.' % id)
-        dd[int(id)] = ['todo', item[1]]
+        click.echo('Regressing task %s to todo.' % id)
+        dd['data'][int(id)] = ['todo', item[1]]
         write_data(config, dd)
-
     else:
         click.echo('Already in todo, can not regress %s' % id)
 
@@ -147,7 +141,7 @@ def display():
 
     config = read_config_yaml()
 
-    # dd = {1: ['todo', 'todo1'],
+    # dd = {'data':{1: ['todo', 'todo1'],
     #       6: ['todo', 'this is a longer todoodoo'],
     #       7: ['todo', 'another longbamabobadoodleydood'],
     #       2: ['inprogress', 'ip1'],
@@ -155,14 +149,15 @@ def display():
     #       3: ['done', 'done1'],
     #       4: ['done', 'done2'],
     #       5: ['done', 'doneski but tis a long thingermabob that goes on.']
-    #       }
+    #       },
+    #       'deleted':{}}
 
     dd = read_data(config)
 
     todos = []
     inprogs = []
     dones = []
-    for key, value in dd.iteritems():
+    for key, value in dd['data'].iteritems():
         if value[0] == 'todo':
             todos.append( "[%d] %s" % (key, value[1]) )
         elif value[0] == 'inprogress':
@@ -211,6 +206,7 @@ def display():
     table.table_data[1][2] = wrapped_dones
 
     print(table.table)
+#    write_data(config, dd)
 
 def read_data(config):
     """Read the existing data from the config datasource"""
