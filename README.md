@@ -5,6 +5,21 @@ clik is a super simple command-line utility for tracking tasks following the Jap
 
 $`pip install clik`
 
+### Create a `.clik.yaml` in your $HOME directory
+
+```yaml
+---
+clik_data: /Users/kplummer/.clik.dat
+```
+
+-- or --
+
+$`clik configure`
+
+to create a default data file location.
+
+This is where the tool will store the history of files.  It's configurable so you put the data in a Dropbox or other cloud-watched directory for safe archiving/backing up.
+
 ## Usage
 The basic usage of clik breaks down into three basic commands:
 

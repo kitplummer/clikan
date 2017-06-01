@@ -74,9 +74,17 @@ def cli():
     """clik CLI personal kanban """
 
 @cli.command()
+def configure():
+    """Place default config file in your home directory"""
+    path = "%s/.clik.dat" % os.environ['HOME']
+    with open(os.environ['HOME'] + "/.clik.yaml", 'w') as outfile:
+        yaml.dump({'clik_data': path}, outfile, default_flow_style=False)
+    click.echo("Creating %s" % path)
+
+@cli.command()
 @click.option('--task', prompt=True)
 def new(task):
-    """Create new task"""
+    """Create new task and put it in todo"""
     if len(task) > 40:
         click.echo('Task must be shorter than 40 chars')
     else:
@@ -90,7 +98,7 @@ def new(task):
 @cli.command()
 @click.option('--id', prompt=True)
 def remove(id):
-    """Remove task"""
+    """Remove task from clik"""
     config = read_config_yaml()
     dd = read_data(config)
     click.echo('Remove task: %r' % dd['data'].get(int(id)))
@@ -225,9 +233,13 @@ def write_data(config, data):
 
 def read_config_yaml():
     """Read the app config from ~/.clik.yaml"""
-    with open(os.environ['HOME'] + "/.clik.yaml", 'r') as stream:
-        try:
-            return yaml.load(stream)
-        except yaml.YAMLError as exc:
-            print "Ensure ~/.clik.yaml exists."
-            print(exc)
+    try:
+        with open(os.environ['HOME'] + "/.clik.yaml", 'r') as stream:
+            try:
+                return yaml.load(stream)
+            except yaml.YAMLError as exc:
+                print "Ensure ~/.clik.yaml is valid, expected YAML."
+                sys.exit()
+    except IOError as exc:
+        print "Ensure ~/.clik.yaml exists and is valid."
+        sys.exit()
