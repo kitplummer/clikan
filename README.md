@@ -45,6 +45,10 @@ $`clik regress --id [task id]`
 
 $`clik remove --id [task id]`
 
+### Configure
+
+$`clik configure`
+
 ## Development
 
 It's Python code.  Fork, fix, and submit a PR - it'd be super appreciated.
