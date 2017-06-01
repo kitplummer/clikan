@@ -7,7 +7,8 @@ setup (
         install_requires=[
             'Click',
             'pyyaml',
-            'beautifultable'
+            'terminaltables',
+            'textwrap'
         ],
         entry_points='''
             [console_scripts]
