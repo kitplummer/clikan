@@ -100,6 +100,48 @@ def remove(id):
     write_data(config, dd)
 
 @cli.command()
+@click.option('--id', prompt=True)
+def promote(id):
+    """Promote todo"""
+    config = read_config_yaml()
+    dd = read_data(config)
+    item = dd.get(int(id))
+    print item
+    if item[0] == 'todo':
+        click.echo('Promoting todo %s to in-progress.' % id)
+        dd[int(id)] = ['inprogress', item[1]]
+        write_data(config, dd)
+
+    elif item[0] == 'inprogress':
+        click.echo('Promoting todo %s to done.' % id)
+        dd[int(id)] = ['done', item[1]]
+        write_data(config, dd)
+
+    else:
+        click.echo('Already done, can not promote %s' % id)
+
+@cli.command()
+@click.option('--id', prompt=True)
+def regress(id):
+    """Regress todo"""
+    config = read_config_yaml()
+    dd = read_data(config)
+    item = dd.get(int(id))
+    print item
+    if item[0] == 'done':
+        click.echo('Regressing todo %s to in-progress.' % id)
+        dd[int(id)] = ['inprogress', item[1]]
+        write_data(config, dd)
+
+    elif item[0] == 'inprogress':
+        click.echo('Regressing todo %s to todo.' % id)
+        dd[int(id)] = ['todo', item[1]]
+        write_data(config, dd)
+
+    else:
+        click.echo('Already in todo, can not regress %s' % id)
+
+@cli.command()
 def display():
     """clik display"""
 
