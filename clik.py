@@ -88,12 +88,25 @@ def new(task):
     if len(task) > 40:
         click.echo('Task must be shorter than 40 chars')
     else:
-        click.echo('Creating new task w/ %s' % task)
         config = read_config_yaml()
         dd = read_data(config)
-        od = collections.OrderedDict(sorted(dd['data'].items()))
-        dd['data'].update({next(reversed(od))+1:['todo', task]})
-        write_data(config, dd)
+
+        todos, inprogs, dones = split_items(dd)
+        print "CONFIG: %r" % config
+        print "TODOS: %r" % len(todos)
+        if config['limits']['todo'] and int(config['limits']['todo']) <= len(todos):
+            click.echo('No new todos, limit reached already.')
+        else:
+            od = collections.OrderedDict(sorted(dd['data'].items()))
+            if bool(od):
+                dd['data'].update({next(reversed(od))+1:['todo', task]})
+            else:
+                dd['data'].update({1:['todo', task]})
+
+            click.echo('Creating new task w/ %s' % task)
+            write_data(config, dd)
+
+
 
 @cli.command()
 @click.option('--id', prompt=True)
@@ -112,11 +125,16 @@ def promote(id):
     """Promote task"""
     config = read_config_yaml()
     dd = read_data(config)
+    todos, inprogs, dones = split_items(dd)
+
     item = dd['data'].get(int(id))
     if item[0] == 'todo':
-        click.echo('Promoting task %s to in-progress.' % id)
-        dd['data'][int(id)] = ['inprogress', item[1]]
-        write_data(config, dd)
+        if config['limits']['wip'] and int(config['limits']['wip']) <= len(inprogs):
+            click.echo('No new tasks, limit reached already.')
+        else:
+            click.echo('Promoting task %s to in-progress.' % id)
+            dd['data'][int(id)] = ['inprogress', item[1]]
+            write_data(config, dd)
     elif item[0] == 'inprogress':
         click.echo('Promoting task %s to done.' % id)
         dd['data'][int(id)] = ['done', item[1]]
@@ -162,17 +180,7 @@ def display():
 
     dd = read_data(config)
 
-    todos = []
-    inprogs = []
-    dones = []
-    for key, value in dd['data'].iteritems():
-        if value[0] == 'todo':
-            todos.append( "[%d] %s" % (key, value[1]) )
-        elif value[0] == 'inprogress':
-            inprogs.append( "[%d] %s" % (key, value[1]) )
-        else:
-            dones.append( "[%d] %s" % (key, value[1]) )
-
+    todos, inprogs, dones = split_items(dd)
 
     todos = '\n'.join([str(x) for x in todos])
     inprogs = '\n'.join([str(x) for x in inprogs])
@@ -218,12 +226,18 @@ def display():
 
 def read_data(config):
     """Read the existing data from the config datasource"""
-    with open(config["clik_data"], 'r') as stream:
-        try:
+    try:
+        with open(config["clik_data"], 'r') as stream:
+            try:
+                return yaml.load(stream)
+            except yaml.YAMLError as exc:
+                print "Ensure %s exists, as you specified it as the clik data file." % config['clik_data']
+                print(exc)
+    except IOError as exc:
+        click.echo("No data, initializing data file.")
+        write_data(config, {"data":{},"deleted":{}})
+        with open(config["clik_data"], 'r') as stream:
             return yaml.load(stream)
-        except yaml.YAMLError as exc:
-            print "Ensure %s exists, as you specified it as the clik data file." % config['clik_data']
-            print(exc)
 
 def write_data(config, data):
     """Write the data to the config datasource"""
@@ -243,3 +257,17 @@ def read_config_yaml():
     except IOError as exc:
         print "Ensure ~/.clik.yaml exists and is valid."
         sys.exit()
+
+def split_items(dd):
+    todos = []
+    inprogs = []
+    dones = []
+    for key, value in dd['data'].iteritems():
+        if value[0] == 'todo':
+            todos.append( "[%d] %s" % (key, value[1]) )
+        elif value[0] == 'inprogress':
+            inprogs.append( "[%d] %s" % (key, value[1]) )
+        else:
+            dones.append( "[%d] %s" % (key, value[1]) )
+
+    return todos, inprogs, dones
