@@ -5,6 +5,7 @@ from terminaltables import SingleTable
 import sys
 from textwrap import wrap
 import collections
+import datetime
 
 VERSION = '0.0.1'
 class Config(object):
@@ -91,17 +92,15 @@ def new(task):
         config = read_config_yaml()
         dd = read_data(config)
 
-        todos, inprogs, dones = split_items(dd)
-        print "CONFIG: %r" % config
-        print "TODOS: %r" % len(todos)
-        if config['limits']['todo'] and int(config['limits']['todo']) <= len(todos):
+        todos, inprogs, dones = split_items(config, dd)
+        if 'todo' in config['limits'] and int(config['limits']['todo']) <= len(todos):
             click.echo('No new todos, limit reached already.')
         else:
             od = collections.OrderedDict(sorted(dd['data'].items()))
             if bool(od):
-                dd['data'].update({next(reversed(od))+1:['todo', task]})
+                dd['data'].update({next(reversed(od))+1:['todo', task, timestamp(), timestamp()]})
             else:
-                dd['data'].update({1:['todo', task]})
+                dd['data'].update({1:['todo', task, timestamp(), timestamp()]})
 
             click.echo('Creating new task w/ %s' % task)
             write_data(config, dd)
@@ -115,7 +114,10 @@ def remove(id):
     config = read_config_yaml()
     dd = read_data(config)
     click.echo('Remove task: %r' % dd['data'].get(int(id)))
-    dd['deleted'] = {int(id): dd['data'].get(int(id))}
+    item = dd['data'].get(int(id))
+    item[0] = 'deleted'
+    item[2] = timestamp()
+    dd['deleted'].update({int(id): item})
     dd['data'].pop(int(id))
     write_data(config, dd)
 
@@ -125,19 +127,19 @@ def promote(id):
     """Promote task"""
     config = read_config_yaml()
     dd = read_data(config)
-    todos, inprogs, dones = split_items(dd)
+    todos, inprogs, dones = split_items(config, dd)
 
     item = dd['data'].get(int(id))
     if item[0] == 'todo':
-        if config['limits']['wip'] and int(config['limits']['wip']) <= len(inprogs):
+        if 'wip' in config['limits'] and int(config['limits']['wip']) <= len(inprogs):
             click.echo('No new tasks, limit reached already.')
         else:
             click.echo('Promoting task %s to in-progress.' % id)
-            dd['data'][int(id)] = ['inprogress', item[1]]
+            dd['data'][int(id)] = ['inprogress', item[1], timestamp(), item[3]]
             write_data(config, dd)
     elif item[0] == 'inprogress':
         click.echo('Promoting task %s to done.' % id)
-        dd['data'][int(id)] = ['done', item[1]]
+        dd['data'][int(id)] = ['done', item[1], timestamp(), item[3]]
         write_data(config, dd)
     else:
         click.echo('Already done, can not promote %s' % id)
@@ -152,11 +154,11 @@ def regress(id):
     print item
     if item[0] == 'done':
         click.echo('Regressing task %s to in-progress.' % id)
-        dd['data'][int(id)] = ['inprogress', item[1]]
+        dd['data'][int(id)] = ['inprogress', item[1], timestamp(), item[3]]
         write_data(config, dd)
     elif item[0] == 'inprogress':
         click.echo('Regressing task %s to todo.' % id)
-        dd['data'][int(id)] = ['todo', item[1]]
+        dd['data'][int(id)] = ['todo', item[1], timestamp(), item[3]]
         write_data(config, dd)
     else:
         click.echo('Already in todo, can not regress %s' % id)
@@ -167,20 +169,14 @@ def display():
 
     config = read_config_yaml()
 
-    # dd = {'data':{1: ['todo', 'todo1'],
-    #       6: ['todo', 'this is a longer todoodoo'],
-    #       7: ['todo', 'another longbamabobadoodleydood'],
-    #       2: ['inprogress', 'ip1'],
-    #       8: ['inprogress', 'workin on dis!'],
-    #       3: ['done', 'done1'],
-    #       4: ['done', 'done2'],
-    #       5: ['done', 'doneski but tis a long thingermabob that goes on.']
-    #       },
-    #       'deleted':{}}
-
     dd = read_data(config)
 
-    todos, inprogs, dones = split_items(dd)
+    todos, inprogs, dones = split_items(config, dd)
+
+    if 'done' in config['limits']:
+        dones = dones[0:int(config['limits']['done'])]
+    else:
+        dones = dones[0:10]
 
     todos = '\n'.join([str(x) for x in todos])
     inprogs = '\n'.join([str(x) for x in inprogs])
@@ -258,16 +254,20 @@ def read_config_yaml():
         print "Ensure ~/.clik.yaml exists and is valid."
         sys.exit()
 
-def split_items(dd):
+def split_items(config, dd):
     todos = []
     inprogs = []
     dones = []
+
     for key, value in dd['data'].iteritems():
         if value[0] == 'todo':
             todos.append( "[%d] %s" % (key, value[1]) )
         elif value[0] == 'inprogress':
             inprogs.append( "[%d] %s" % (key, value[1]) )
         else:
-            dones.append( "[%d] %s" % (key, value[1]) )
+            dones.insert( 0, "[%d] %s" % (key, value[1]) )
 
     return todos, inprogs, dones
+
+def timestamp():
+    return '{:%Y-%b-%d %H:%M:%S}'.format(datetime.datetime.now())
