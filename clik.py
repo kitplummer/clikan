@@ -7,7 +7,7 @@ from textwrap import wrap
 import collections
 import datetime
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 class Config(object):
     """The config in this example only holds aliases."""
 
@@ -87,25 +87,26 @@ def configure():
 def new(task):
     """Create new task and put it in todo"""
     if len(task) > 40:
-        click.echo('Task must be shorter than 40 chars')
+        click.echo('Task must be shorter than 40 chars. Brevity counts.')
     else:
         config = read_config_yaml()
         dd = read_data(config)
 
         todos, inprogs, dones = split_items(config, dd)
-        if 'todo' in config['limits'] and int(config['limits']['todo']) <= len(todos):
+        if 'limits' in config and 'todo' in config['limits'] and int(config['limits']['todo']) <= len(todos):
             click.echo('No new todos, limit reached already.')
         else:
             od = collections.OrderedDict(sorted(dd['data'].items()))
+            new_id = 1
             if bool(od):
-                dd['data'].update({next(reversed(od))+1:['todo', task, timestamp(), timestamp()]})
+                new_id = next(reversed(od))+1
+                dd['data'].update({new_id:['todo', task, timestamp(), timestamp()]})
             else:
                 dd['data'].update({1:['todo', task, timestamp(), timestamp()]})
 
-            click.echo('Creating new task w/ %s' % task)
+            click.echo("Creating new task w/ id: %d -> %s" % (new_id, task))
+
             write_data(config, dd)
-
-
 
 @cli.command()
 @click.option('--id', prompt=True)
@@ -131,7 +132,7 @@ def promote(id):
 
     item = dd['data'].get(int(id))
     if item[0] == 'todo':
-        if 'wip' in config['limits'] and int(config['limits']['wip']) <= len(inprogs):
+        if 'limits' in config and 'wip' in config['limits'] and int(config['limits']['wip']) <= len(inprogs):
             click.echo('No new tasks, limit reached already.')
         else:
             click.echo('Promoting task %s to in-progress.' % id)
@@ -173,7 +174,7 @@ def display():
 
     todos, inprogs, dones = split_items(config, dd)
 
-    if 'done' in config['limits']:
+    if 'limits' in config and 'done' in config['limits']:
         dones = dones[0:int(config['limits']['done'])]
     else:
         dones = dones[0:10]

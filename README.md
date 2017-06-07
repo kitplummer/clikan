@@ -1,16 +1,27 @@
-# clik CLI Personal Kanban
-clik is a super simple command-line utility for tracking tasks following the Japanese Kanban (boarding) style.  clik's core intent is to be easy to use.
+# clik CLI (Personal) Kanban
+There has been a little chatter about 'personal' kanban on the tubes lately.  I don't know about the need to hype it as personal, but if you're looking to get your head wrapped around stuff needing to get done - then kanban is a healthy tool.  clik is a super simple command-line utility for tracking tasks following the Japanese Kanban (boarding) style.  clik's core intent is to be easy to use, and to maintain simplicity.
 
 ## Installation
 
 $`pip install clik`
+
+Caveat, I've not tested this on many different targets, or with Python 3.
 
 ### Create a `.clik.yaml` in your $HOME directory
 
 ```yaml
 ---
 clik_data: /Users/kplummer/.clik.dat
+limits:
+  todo: 10
+  wip: 3
+  done: 10
 ```
+
+* `clik_data` is the datastore file location.
+* `limits:todo` is the max number of items allowed in the todo column, keep this small - you want a smart list, not an ice box of ideas here.
+* `limits:wip` is the max number of items allowed in in-progress at a given time.  Context-switching is a farce, focus on one or two tasks at a time.
+* `limits:done` is the max number of done items visible, they'll still be stored.  It's good to see a list of done items, for pure psyche.
 
 -- or --
 
@@ -18,7 +29,7 @@ $`clik configure`
 
 to create a default data file location.
 
-This is where the tool will store the history of files.  It's configurable so you put the data in a Dropbox or other cloud-watched directory for safe archiving/backing up.
+This is where the tool will store the history of files.  It's configurable so you can put the data in a Dropbox or other cloud-watched directory for safe archiving/backing up.
 
 ## Usage
 The basic usage of clik breaks down into three basic commands:
@@ -69,4 +80,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Support
 
-BitBucket Issues
+Github Issues
