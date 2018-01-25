@@ -72,14 +72,14 @@ def read_config(ctx, param, value):
 
 @click.command(cls=AliasedGroup)
 def cli():
-    """clik CLI personal kanban """
+    """clikan: CLI personal kanban """
 
 @cli.command()
 def configure():
     """Place default config file in your home directory"""
-    path = "%s/.clik.dat" % os.environ['HOME']
-    with open(os.environ['HOME'] + "/.clik.yaml", 'w') as outfile:
-        yaml.dump({'clik_data': path}, outfile, default_flow_style=False)
+    path = "%s/.clikan.dat" % os.environ['HOME']
+    with open(os.environ['HOME'] + "/.clikan.yaml", 'w') as outfile:
+        yaml.dump({'clikan_data': path}, outfile, default_flow_style=False)
     click.echo("Creating %s" % path)
 
 @cli.command()
@@ -111,7 +111,7 @@ def new(task):
 @cli.command()
 @click.option('--id', prompt=True)
 def remove(id):
-    """Remove task from clik"""
+    """Remove task from clikan"""
     config = read_config_yaml()
     dd = read_data(config)
     click.echo('Remove task: %r' % dd['data'].get(int(id)))
@@ -166,7 +166,7 @@ def regress(id):
 
 @cli.command()
 def display():
-    """clik display"""
+    """clikan display"""
 
     config = read_config_yaml()
 
@@ -188,7 +188,7 @@ def display():
         ['','',''],
     ]
 
-    table = SingleTable(td, 'clik')
+    table = SingleTable(td, 'clikan')
     table.inner_heading_row_border = False
     table.inner_row_border = True
     table.justify_columns = {0: 'center', 1: 'center', 2: 'center'}
@@ -224,35 +224,35 @@ def display():
 def read_data(config):
     """Read the existing data from the config datasource"""
     try:
-        with open(config["clik_data"], 'r') as stream:
+        with open(config["clikan_data"], 'r') as stream:
             try:
                 return yaml.load(stream)
             except yaml.YAMLError as exc:
-                print "Ensure %s exists, as you specified it as the clik data file." % config['clik_data']
+                print "Ensure %s exists, as you specified it as the clik data file." % config['clikan_data']
                 print(exc)
     except IOError as exc:
         click.echo("No data, initializing data file.")
         write_data(config, {"data":{},"deleted":{}})
-        with open(config["clik_data"], 'r') as stream:
+        with open(config["clikan_data"], 'r') as stream:
             return yaml.load(stream)
 
 def write_data(config, data):
     """Write the data to the config datasource"""
-    with open(config["clik_data"], 'w') as outfile:
+    with open(config["clikan_data"], 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
 
 def read_config_yaml():
-    """Read the app config from ~/.clik.yaml"""
+    """Read the app config from ~/.clikan.yaml"""
     try:
-        with open(os.environ['HOME'] + "/.clik.yaml", 'r') as stream:
+        with open(os.environ['HOME'] + "/.clikan.yaml", 'r') as stream:
             try:
                 return yaml.load(stream)
             except yaml.YAMLError as exc:
-                print "Ensure ~/.clik.yaml is valid, expected YAML."
+                print "Ensure ~/.clikan.yaml is valid, expected YAML."
                 sys.exit()
     except IOError as exc:
-        print "Ensure ~/.clik.yaml exists and is valid."
+        print "Ensure ~/.clikan.yaml exists and is valid."
         sys.exit()
 
 def split_items(config, dd):

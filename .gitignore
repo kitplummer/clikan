@@ -1,6 +1,6 @@
-.clik.yaml
+.clikan.yaml
 build/
-clik.egg-info/
-clik.pyc
+clikan.egg-info/
+clikan.pyc
 dist/
 venv/

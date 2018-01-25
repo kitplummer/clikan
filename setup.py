@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup (
-        name="clik",
+        name="clikan",
         version='0.0.1',
-        py_modules=['clik'],
+        py_modules=['clikan'],
         install_requires=[
             'Click',
             'pyyaml',
@@ -11,6 +11,6 @@ setup (
         ],
         entry_points='''
             [console_scripts]
-            clik=clik:cli
+            clikan=clikan:cli
         '''
 )
