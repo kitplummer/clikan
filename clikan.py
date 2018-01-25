@@ -152,7 +152,7 @@ def regress(id):
     config = read_config_yaml()
     dd = read_data(config)
     item = dd.get(int(id))
-    print item
+    print(item)
     if item[0] == 'done':
         click.echo('Regressing task %s to in-progress.' % id)
         dd['data'][int(id)] = ['inprogress', item[1], timestamp(), item[3]]
@@ -228,7 +228,7 @@ def read_data(config):
             try:
                 return yaml.load(stream)
             except yaml.YAMLError as exc:
-                print "Ensure %s exists, as you specified it as the clik data file." % config['clikan_data']
+                print("Ensure %s exists, as you specified it as the clik data file." % config['clikan_data'])
                 print(exc)
     except IOError as exc:
         click.echo("No data, initializing data file.")
@@ -249,10 +249,10 @@ def read_config_yaml():
             try:
                 return yaml.load(stream)
             except yaml.YAMLError as exc:
-                print "Ensure ~/.clikan.yaml is valid, expected YAML."
+                print("Ensure ~/.clikan.yaml is valid, expected YAML.")
                 sys.exit()
     except IOError as exc:
-        print "Ensure ~/.clikan.yaml exists and is valid."
+        print("Ensure ~/.clikan.yaml exists and is valid.")
         sys.exit()
 
 def split_items(config, dd):
@@ -260,7 +260,7 @@ def split_items(config, dd):
     inprogs = []
     dones = []
 
-    for key, value in dd['data'].iteritems():
+    for key, value in dd['data'].items():
         if value[0] == 'todo':
             todos.append( "[%d] %s" % (key, value[1]) )
         elif value[0] == 'inprogress':
