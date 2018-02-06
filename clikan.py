@@ -151,7 +151,7 @@ def regress(id):
     """Regress task"""
     config = read_config_yaml()
     dd = read_data(config)
-    item = dd.get(int(id))
+    item = dd['data'].get(int(id))
     print(item)
     if item[0] == 'done':
         click.echo('Regressing task %s to in-progress.' % id)
