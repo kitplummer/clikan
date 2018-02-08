@@ -5,3 +5,6 @@ clikan.pyc
 dist/
 venv/
 venv3/
+.cache/
+.pytest_cache/
+__pycache__/
