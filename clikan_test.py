@@ -53,3 +53,12 @@ def test_command_promote():
     assert result.exit_code == 0
     assert 'Promoting task 1 to done.' in result.output
 
+## Remove Tests
+def test_command_delete():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['remove', '--id', '1'])
+    assert result.exit_code == 0
+    assert 'Removed task 1.' in result.output
+    result = runner.invoke(cli, ['remove', '--id', '1'])
+    assert result.exit_code == 0
+    assert 'No existing task with' in result.output

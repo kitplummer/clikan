@@ -114,13 +114,16 @@ def remove(id):
     """Remove task from clikan"""
     config = read_config_yaml()
     dd = read_data(config)
-    click.echo('Remove task: %r' % dd['data'].get(int(id)))
     item = dd['data'].get(int(id))
-    item[0] = 'deleted'
-    item[2] = timestamp()
-    dd['deleted'].update({int(id): item})
-    dd['data'].pop(int(id))
-    write_data(config, dd)
+    if item is None:
+        click.echo('No existing task with that id.')
+    else:
+        item[0] = 'deleted'
+        item[2] = timestamp()
+        dd['deleted'].update({int(id): item})
+        dd['data'].pop(int(id))
+        write_data(config, dd)
+        click.echo('Removed task %d.' % int(id))
 
 @cli.command()
 @click.option('--id', prompt=True)
