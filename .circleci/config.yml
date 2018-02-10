@@ -25,8 +25,8 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-           python setup.py install
-           pip install pytest
+            python setup.py install
+            pip install pytest
 
       # run tests!
       # this example uses Django's built-in test-runner
