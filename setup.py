@@ -4,7 +4,7 @@ setup (
         author="Kit Plummer",
         author_email="kitplummer@gmail.com",
         name="clikan",
-        version='0.0.2',
+        version='0.0.3',
         description="Simple CLI-based Kanban board",
         py_modules=['clikan'],
         install_requires=[
