@@ -7,7 +7,9 @@ from textwrap import wrap
 import collections
 import datetime
 
-VERSION = '0.0.2'
+import pkg_resources  # part of setuptools
+VERSION = pkg_resources.require("clikan")[0].version
+
 class Config(object):
     """The config in this example only holds aliases."""
 
@@ -70,11 +72,12 @@ def read_config(ctx, param, value):
     cfg.read_config(value)
     return value
 
+@click.version_option(VERSION)
 @click.command(cls=AliasedGroup)
-def cli():
+def clikan():
     """clikan: CLI personal kanban """
 
-@cli.command()
+@clikan.command()
 def configure():
     """Place default config file in your home directory"""
     path = "%s/.clikan.dat" % os.environ['HOME']
@@ -82,7 +85,7 @@ def configure():
         yaml.dump({'clikan_data': path}, outfile, default_flow_style=False)
     click.echo("Creating %s" % path)
 
-@cli.command()
+@clikan.command()
 @click.option('--task', prompt=True)
 def new(task):
     """Create new task and put it in todo"""
@@ -108,7 +111,7 @@ def new(task):
 
             write_data(config, dd)
 
-@cli.command()
+@clikan.command()
 @click.option('--id', prompt=True)
 def remove(id):
     """Remove task from clikan"""
@@ -125,7 +128,7 @@ def remove(id):
         write_data(config, dd)
         click.echo('Removed task %d.' % int(id))
 
-@cli.command()
+@clikan.command()
 @click.option('--id', prompt=True)
 def promote(id):
     """Promote task"""
@@ -148,7 +151,7 @@ def promote(id):
     else:
         click.echo('Already done, can not promote %s' % id)
 
-@cli.command()
+@clikan.command()
 @click.option('--id', prompt=True)
 def regress(id):
     """Regress task"""
@@ -166,7 +169,7 @@ def regress(id):
     else:
         click.echo('Already in todo, can not regress %s' % id)
 
-@cli.command()
+@clikan.command()
 def display():
     """clikan display"""
 

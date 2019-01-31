@@ -29,6 +29,8 @@ to create a default data file location.
 
 This is where the tool will store the history of files.  It's configurable so you can put the data in a Dropbox or other cloud-watched directory for safe archiving/backing up.
 
+If you're like me, even `clikan` is a bunch too many characters to type, so shorten with an alias in my shell config to `clik`.
+
 ## Usage
 The basic usage of clikan breaks down into three basic commands:
 
