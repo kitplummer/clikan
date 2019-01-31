@@ -2,6 +2,7 @@
 build/
 clikan.egg-info/
 clikan.pyc
+setup.pyc
 dist/
 venv/
 venv3/
