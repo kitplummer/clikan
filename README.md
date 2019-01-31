@@ -1,11 +1,9 @@
 # clikan: CLI (Personal) Kanban
-There has been a little chatter about 'personal' kanban on the tubes lately.  I don't know about the need to hype it as personal, but if you're looking to get your head wrapped around stuff needing to get done - then kanban is a healthy tool.  clik is a super simple command-line utility for tracking tasks following the Japanese Kanban (boarding) style.  clik's core intent is to be easy to use, and to maintain simplicity.
+There has been a little chatter about 'personal' kanban on the tubes lately.  I don't know about the need to hype it as personal, but if you're looking to get your head wrapped around stuff needing to get done - then kanban is a healthy tool.  clikan is a super simple command-line utility for tracking tasks following the Japanese Kanban (boarding) style.  clikan's core intent is to be easy to use, and to maintain simplicity.
 
 ## Installation
 
 $`pip install clikan`
-
-Caveat, I've not tested this on many different targets, or with Python 3.
 
 ### Create a `.clikan.yaml` in your $HOME directory
 
@@ -60,6 +58,10 @@ $`clikan remove --id [task id]`
 
 $`clikan configure`
 
+### Screenshot
+
+![Screenshot](screenshot.png)
+
 ## Development
 
 It's Python code.  Fork, fix, and submit a PR - it'd be super appreciated.
@@ -80,4 +82,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Support
 
-Github Issues
+Bitbucket Issues
+https://bitbucket.org/kitplummer/clikan/issues?status=new&status=open
