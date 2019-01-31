@@ -230,7 +230,7 @@ def read_data(config):
             try:
                 return yaml.load(stream)
             except yaml.YAMLError as exc:
-                print("Ensure %s exists, as you specified it as the clik data file." % config['clikan_data'])
+                print("Ensure %s exists, as you specified it as the clikan data file." % config['clikan_data'])
                 print(exc)
     except IOError as exc:
         click.echo("No data, initializing data file.")
