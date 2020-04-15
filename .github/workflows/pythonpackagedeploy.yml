@@ -44,6 +44,6 @@ jobs:
         echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
     - name: Create dist
       run: |
-        pip install setuptools wheel
+        pip install setuptools wheel twine
         python setup.py sdist bdist_wheel
         python -m twine upload dist/*
