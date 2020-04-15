@@ -6,8 +6,9 @@ import sys
 from textwrap import wrap
 import collections
 import datetime
-
+import configparser
 import pkg_resources  # part of setuptools
+
 VERSION = pkg_resources.require("clikan")[0].version
 
 class Config(object):

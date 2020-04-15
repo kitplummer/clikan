@@ -1,9 +1,0 @@
-image: python:3.6.2
-pipelines:
-  default:
-    - step:
-        script:
-          - python --version
-          - python setup.py install
-          - pip install pytest
-          - pytest clikan_test.py
