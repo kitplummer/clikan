@@ -37,13 +37,13 @@ jobs:
       run: |
         pip install pytest
         pytest clikan_test.py
-    - name: Setup creds
-      run: |
-        echo -e "[pypi]" >> ~/.pypirc
-        echo -e "username = kit.plummer" >> ~/.pypirc
-        echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
     - name: Create dist
       run: |
         pip install setuptools wheel twine
         python setup.py sdist bdist_wheel
         python -m twine upload dist/*
+    - name: Publish a Python distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: kit.plummer
+        password: ${{ secrets.pypi_password }}
