@@ -84,5 +84,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Support
 
-Bitbucket Issues
-https://bitbucket.org/kitplummer/clikan/issues?status=new&status=open
+Github Issues
+https://github.com/kitplummer/clikan/issues
+
+Feel free to use issues as a forum-like thing too, ask questions or post comments.
