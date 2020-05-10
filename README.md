@@ -70,6 +70,16 @@ It's Python code.  Fork, fix, and submit a PR - it'd be super appreciated.
 
 Tests?  Um, yeah.
 
+### Testing
+
+***Definitely*** need some help here.  There is a basic test suite available in `clikan_test.py`.
+
+To run it, make sure ~/.clikan.dat is empty, the you can run:
+
+```
+pytest clikan_test.py
+```
+
 ## License
 
 MIT License
