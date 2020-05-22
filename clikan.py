@@ -78,11 +78,18 @@ def read_config(ctx, param, value):
 def clikan():
     """clikan: CLI personal kanban """
 
+def get_clikan_home():
+    home = os.environ.get('CLIKAN_HOME')
+    if not home:
+        home = os.environ.get('HOME')
+    return home
+
 @clikan.command()
 def configure():
     """Place default config file in your home directory"""
-    path = "%s/.clikan.dat" % os.environ['HOME']
-    with open(os.environ['HOME'] + "/.clikan.yaml", 'w') as outfile:
+    home = get_clikan_home()
+    path = "%s/.clikan.dat" % home
+    with open(home + "/.clikan.yaml", 'w') as outfile:
         yaml.dump({'clikan_data': path}, outfile, default_flow_style=False)
     click.echo("Creating %s" % path)
 
@@ -251,14 +258,15 @@ def write_data(config, data):
 def read_config_yaml():
     """Read the app config from ~/.clikan.yaml"""
     try:
-        with open(os.environ['HOME'] + "/.clikan.yaml", 'r') as stream:
+        home = get_clikan_home()
+        with open(home + "/.clikan.yaml", 'r') as stream:
             try:
                 return yaml.load(stream, Loader=yaml.FullLoader)
             except yaml.YAMLError as exc:
-                print("Ensure ~/.clikan.yaml is valid, expected YAML.")
+                print("Ensure %s/.clikan.yaml is valid, expected YAML." % home)
                 sys.exit()
     except IOError as exc:
-        print("Ensure ~/.clikan.yaml exists and is valid.")
+        print("Ensure %s/.clikan.yaml exists and is valid." % home)
         sys.exit()
 
 def split_items(config, dd):
