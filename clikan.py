@@ -88,10 +88,14 @@ def get_clikan_home():
 def configure():
     """Place default config file in CLIKAN_HOME or HOME"""
     home = get_clikan_home()
-    path = "%s/.clikan.dat" % home
-    with open(home + "/.clikan.yaml", 'w') as outfile:
-        yaml.dump({'clikan_data': path}, outfile, default_flow_style=False)
-    click.echo("Creating %s" % path)
+    data_path = os.path.join(home, ".clikan.dat")
+    config_path = os.path.join(home, ".clikan.yaml")
+    if (os.path.exists(config_path) and not
+            click.confirm('Config file exists. Do you want to overwrite?')):
+        return
+    with open(config_path, 'w') as outfile:
+        yaml.dump({'clikan_data': data_path}, outfile, default_flow_style=False)
+    click.echo("Creating %s" % config_path)
 
 @clikan.command()
 @click.argument('task')

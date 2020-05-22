@@ -29,7 +29,12 @@ def test_command_configure():
     assert result.exit_code == 0
     assert 'Creating' in result.output
 
-## Create Tests
+def test_command_configure_existing():
+    runner = CliRunner()
+    result = runner.invoke(clikan, ["configure"])
+    assert 'Config file exists' in result.output
+
+## New Tests
 def test_command_a():
     runner = CliRunner()
     result = runner.invoke(clikan, ["a", "n_--task_test"])
