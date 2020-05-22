@@ -86,7 +86,7 @@ def get_clikan_home():
 
 @clikan.command()
 def configure():
-    """Place default config file in your home directory"""
+    """Place default config file in CLIKAN_HOME or HOME"""
     home = get_clikan_home()
     path = "%s/.clikan.dat" % home
     with open(home + "/.clikan.yaml", 'w') as outfile:
@@ -95,8 +95,8 @@ def configure():
 
 @clikan.command()
 @click.argument('task')
-def new(task):
-    """Create new task and put it in todo"""
+def add(task):
+    """Add a task in todo"""
     if len(task) > 40:
         click.echo('Task must be shorter than 40 chars. Brevity counts.')
     else:
@@ -121,8 +121,8 @@ def new(task):
 
 @clikan.command()
 @click.argument('id')
-def remove(id):
-    """Remove task from clikan"""
+def delete(id):
+    """Delete task"""
     config = read_config_yaml()
     dd = read_data(config)
     item = dd['data'].get(int(id))
@@ -178,8 +178,8 @@ def regress(id):
         click.echo('Already in todo, can not regress %s' % id)
 
 @clikan.command()
-def display():
-    """clikan display"""
+def show():
+    """Show tasks in clikan"""
 
     config = read_config_yaml()
 
