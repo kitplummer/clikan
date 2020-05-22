@@ -94,7 +94,7 @@ def configure():
     click.echo("Creating %s" % path)
 
 @clikan.command()
-@click.option('--task', prompt=True)
+@click.argument('task')
 def new(task):
     """Create new task and put it in todo"""
     if len(task) > 40:
@@ -120,7 +120,7 @@ def new(task):
             write_data(config, dd)
 
 @clikan.command()
-@click.option('--id', prompt=True)
+@click.argument('id')
 def remove(id):
     """Remove task from clikan"""
     config = read_config_yaml()
@@ -137,7 +137,7 @@ def remove(id):
         click.echo('Removed task %d.' % int(id))
 
 @clikan.command()
-@click.option('--id', prompt=True)
+@click.argument('id')
 def promote(id):
     """Promote task"""
     config = read_config_yaml()
@@ -160,7 +160,7 @@ def promote(id):
         click.echo('Already done, can not promote %s' % id)
 
 @clikan.command()
-@click.option('--id', prompt=True)
+@click.argument('id')
 def regress(id):
     """Regress task"""
     config = read_config_yaml()
