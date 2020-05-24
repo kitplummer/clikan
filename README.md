@@ -80,6 +80,12 @@ To run it, make sure ~/.clikan.dat is empty, the you can run:
 pytest clikan_test.py
 ```
 
+If you don't want to whack your **working** version of clikan you do this:
+
+```
+CLIKAN_HOME=/tmp pytest clikan_test.py
+```
+
 ## License
 
 MIT License
