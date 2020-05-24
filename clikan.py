@@ -11,6 +11,7 @@ import pkg_resources  # part of setuptools
 
 VERSION = pkg_resources.require("clikan")[0].version
 
+
 class Config(object):
     """The config in this example only holds aliases."""
 
@@ -28,6 +29,7 @@ class Config(object):
 
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
+
 
 class AliasedGroup(click.Group):
     """This subclass of a group supports looking up aliases in a config
@@ -61,6 +63,7 @@ class AliasedGroup(click.Group):
             return click.Group.get_command(self, ctx, matches[0])
         ctx.fail('Too many matches: %s' % ', '.join(sorted(matches)))
 
+
 def read_config(ctx, param, value):
     """Callback that is used whenever --config is passed.  We use this to
     always load the correct config.  This means that the config is loaded
@@ -73,16 +76,19 @@ def read_config(ctx, param, value):
     cfg.read_config(value)
     return value
 
+
 @click.version_option(VERSION)
 @click.command(cls=AliasedGroup)
 def clikan():
     """clikan: CLI personal kanban """
+
 
 def get_clikan_home():
     home = os.environ.get('CLIKAN_HOME')
     if not home:
         home = os.environ.get('HOME')
     return home
+
 
 @clikan.command()
 def configure():
@@ -94,8 +100,10 @@ def configure():
             click.confirm('Config file exists. Do you want to overwrite?')):
         return
     with open(config_path, 'w') as outfile:
-        yaml.dump({'clikan_data': data_path}, outfile, default_flow_style=False)
+        conf = {'clikan_data': data_path}
+        yaml.dump(conf, outfile, default_flow_style=False)
     click.echo("Creating %s" % config_path)
+
 
 @clikan.command()
 @click.argument('task')
@@ -108,20 +116,20 @@ def add(task):
         dd = read_data(config)
 
         todos, inprogs, dones = split_items(config, dd)
-        if 'limits' in config and 'todo' in config['limits'] and int(config['limits']['todo']) <= len(todos):
+        if ('limits' in config and 'todo' in config['limits'] and
+                int(config['limits']['todo']) <= len(todos)):
             click.echo('No new todos, limit reached already.')
         else:
             od = collections.OrderedDict(sorted(dd['data'].items()))
             new_id = 1
             if bool(od):
-                new_id = next(reversed(od))+1
-                dd['data'].update({new_id:['todo', task, timestamp(), timestamp()]})
-            else:
-                dd['data'].update({1:['todo', task, timestamp(), timestamp()]})
+                new_id = next(reversed(od)) + 1
+            entry = ['todo', task, timestamp(), timestamp()]
+            dd['data'].update({new_id: entry})
 
             click.echo("Creating new task w/ id: %d -> %s" % (new_id, task))
-
             write_data(config, dd)
+
 
 @clikan.command()
 @click.argument('id')
@@ -140,6 +148,7 @@ def delete(id):
         write_data(config, dd)
         click.echo('Removed task %d.' % int(id))
 
+
 @clikan.command()
 @click.argument('id')
 def promote(id):
@@ -150,7 +159,8 @@ def promote(id):
 
     item = dd['data'].get(int(id))
     if item[0] == 'todo':
-        if 'limits' in config and 'wip' in config['limits'] and int(config['limits']['wip']) <= len(inprogs):
+        if ('limits' in config and 'wip' in config['limits'] and
+                int(config['limits']['wip']) <= len(inprogs)):
             click.echo('No new tasks, limit reached already.')
         else:
             click.echo('Promoting task %s to in-progress.' % id)
@@ -162,6 +172,7 @@ def promote(id):
         write_data(config, dd)
     else:
         click.echo('Already done, can not promote %s' % id)
+
 
 @clikan.command()
 @click.argument('id')
@@ -180,6 +191,7 @@ def regress(id):
         write_data(config, dd)
     else:
         click.echo('Already in todo, can not regress %s' % id)
+
 
 @clikan.command()
 def show():
@@ -202,15 +214,15 @@ def show():
 
     td = [
         ['todo', 'in-progress', 'done'],
-        ['','',''],
+        ['', '', ''],
     ]
 
     table = SingleTable(td, 'clikan')
     table.inner_heading_row_border = False
     table.inner_row_border = True
     table.justify_columns = {0: 'center', 1: 'center', 2: 'center'}
-    #table.padding_left = 5
-    #table.padding_right = 5
+    # table.padding_left = 5
+    # table.padding_right = 5
 
     # todos wrapping
     max_width = table.column_max_width(0)
@@ -238,6 +250,7 @@ def show():
     print(table.table)
 #    write_data(config, dd)
 
+
 def read_data(config):
     """Read the existing data from the config datasource"""
     try:
@@ -245,13 +258,15 @@ def read_data(config):
             try:
                 return yaml.load(stream, Loader=yaml.FullLoader)
             except yaml.YAMLError as exc:
-                print("Ensure %s exists, as you specified it as the clikan data file." % config['clikan_data'])
+                print("Ensure %s exists, as you specified it "
+                      "as the clikan data file." % config['clikan_data'])
                 print(exc)
-    except IOError as exc:
+    except IOError:
         click.echo("No data, initializing data file.")
-        write_data(config, {"data":{},"deleted":{}})
+        write_data(config, {"data": {}, "deleted": {}})
         with open(config["clikan_data"], 'r') as stream:
             return yaml.load(stream, Loader=yaml.FullLoader)
+
 
 def write_data(config, data):
     """Write the data to the config datasource"""
@@ -266,12 +281,13 @@ def read_config_yaml():
         with open(home + "/.clikan.yaml", 'r') as stream:
             try:
                 return yaml.load(stream, Loader=yaml.FullLoader)
-            except yaml.YAMLError as exc:
+            except yaml.YAMLError:
                 print("Ensure %s/.clikan.yaml is valid, expected YAML." % home)
                 sys.exit()
-    except IOError as exc:
+    except IOError:
         print("Ensure %s/.clikan.yaml exists and is valid." % home)
         sys.exit()
+
 
 def split_items(config, dd):
     todos = []
@@ -280,13 +296,14 @@ def split_items(config, dd):
 
     for key, value in dd['data'].items():
         if value[0] == 'todo':
-            todos.append( "[%d] %s" % (key, value[1]) )
+            todos.append("[%d] %s" % (key, value[1]))
         elif value[0] == 'inprogress':
-            inprogs.append( "[%d] %s" % (key, value[1]) )
+            inprogs.append("[%d] %s" % (key, value[1]))
         else:
-            dones.insert( 0, "[%d] %s" % (key, value[1]) )
+            dones.insert(0, "[%d] %s" % (key, value[1]))
 
     return todos, inprogs, dones
+
 
 def timestamp():
     return '{:%Y-%b-%d %H:%M:%S}'.format(datetime.datetime.now())
