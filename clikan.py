@@ -224,28 +224,15 @@ def show():
     # table.padding_left = 5
     # table.padding_right = 5
 
-    # todos wrapping
-    max_width = table.column_max_width(0)
+    def wrap_lines(lines, column_index):
+        max_width = table.column_max_width(column_index)
+        packed = [line for line in lines if line.strip() != '']
+        wrapped = [wrap(line, max_width, break_long_words=False,
+                      replace_whitespace=False) for line in packed]
+        return '\n'.join(['\n'.join(w) for w in wrapped])
 
-    wrapped_string = '\n'.join(['\n'.join(wrap(line, max_width,
-                 break_long_words=False, replace_whitespace=False))
-                 for line in todos.splitlines() if line.strip() != ''])
-
-    table.table_data[1][0] = wrapped_string
-
-    # inprogs wrapping
-    max_width = table.column_max_width(1)
-    wrapped_inprogs = '\n'.join(['\n'.join(wrap(line, max_width,
-                 break_long_words=False, replace_whitespace=False))
-                 for line in inprogs.splitlines() if line.strip() != ''])
-    table.table_data[1][1] = wrapped_inprogs
-
-    # dones wrapping
-    max_width = table.column_max_width(2)
-    wrapped_dones = '\n'.join(['\n'.join(wrap(line, max_width,
-                 break_long_words=False, replace_whitespace=False))
-                 for line in dones.splitlines() if line.strip() != ''])
-    table.table_data[1][2] = wrapped_dones
+    for index, section in enumerate((todos, inprogs, dones)):
+        table.table_data[1][index] = wrap_lines(section.splitlines(), index)
 
     print(table.table)
 #    write_data(config, dd)
