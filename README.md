@@ -34,27 +34,27 @@ If you're like me, even `clikan` is a bunch too many characters to type, so shor
 ## Usage
 The basic usage of clikan breaks down into three basic commands:
 
-### Display
+### Show
 
-$`clikan display` (alias: d)
+$`clikan show` (alias: s)
 
-### New
+### Add
 
-$`clikan new --task [task text]` (alias: n)
+$`clikan add [task text]` (alias: a)
 
 ### Promote
 
-$`clikan promote --id [task id]` (alias: p)
+$`clikan promote [task id]` (alias: p)
 
 And there are more supporting commands:
 
 ### Regress
 
-$`clikan regress --id [task id]`
+$`clikan regress [task id]`
 
-### Remove
+### Delete
 
-$`clikan remove --id [task id]`
+$`clikan delete [task id]`
 
 ### Configure
 
@@ -69,6 +69,22 @@ $`clikan configure`
 It's Python code.  Fork, fix, and submit a PR - it'd be super appreciated.
 
 Tests?  Um, yeah.
+
+### Testing
+
+***Definitely*** need some help here.  There is a basic test suite available in `clikan_test.py`.
+
+To run it, make sure ~/.clikan.dat is empty, the you can run:
+
+```
+pytest clikan_test.py
+```
+
+If you don't want to whack your **working** version of clikan you do this:
+
+```
+CLIKAN_HOME=/tmp pytest clikan_test.py
+```
 
 ## License
 
