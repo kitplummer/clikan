@@ -11,6 +11,7 @@ import pkg_resources  # part of setuptools
 
 VERSION = pkg_resources.require("clikan")[0].version
 
+
 class Config(object):
     """The config in this example only holds aliases."""
 
@@ -28,6 +29,7 @@ class Config(object):
 
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
+
 
 class AliasedGroup(click.Group):
     """This subclass of a group supports looking up aliases in a config
@@ -61,6 +63,7 @@ class AliasedGroup(click.Group):
             return click.Group.get_command(self, ctx, matches[0])
         ctx.fail('Too many matches: %s' % ', '.join(sorted(matches)))
 
+
 def read_config(ctx, param, value):
     """Callback that is used whenever --config is passed.  We use this to
     always load the correct config.  This means that the config is loaded
@@ -73,23 +76,39 @@ def read_config(ctx, param, value):
     cfg.read_config(value)
     return value
 
+
 @click.version_option(VERSION)
 @click.command(cls=AliasedGroup)
 def clikan():
     """clikan: CLI personal kanban """
 
-@clikan.command()
-def configure():
-    """Place default config file in your home directory"""
-    path = "%s/.clikan.dat" % os.environ['HOME']
-    with open(os.environ['HOME'] + "/.clikan.yaml", 'w') as outfile:
-        yaml.dump({'clikan_data': path}, outfile, default_flow_style=False)
-    click.echo("Creating %s" % path)
+
+def get_clikan_home():
+    home = os.environ.get('CLIKAN_HOME')
+    if not home:
+        home = os.environ.get('HOME')
+    return home
+
 
 @clikan.command()
-@click.option('--task', prompt=True)
-def new(task):
-    """Create new task and put it in todo"""
+def configure():
+    """Place default config file in CLIKAN_HOME or HOME"""
+    home = get_clikan_home()
+    data_path = os.path.join(home, ".clikan.dat")
+    config_path = os.path.join(home, ".clikan.yaml")
+    if (os.path.exists(config_path) and not
+            click.confirm('Config file exists. Do you want to overwrite?')):
+        return
+    with open(config_path, 'w') as outfile:
+        conf = {'clikan_data': data_path}
+        yaml.dump(conf, outfile, default_flow_style=False)
+    click.echo("Creating %s" % config_path)
+
+
+@clikan.command()
+@click.argument('task')
+def add(task):
+    """Add a task in todo"""
     if len(task) > 40:
         click.echo('Task must be shorter than 40 chars. Brevity counts.')
     else:
@@ -97,25 +116,25 @@ def new(task):
         dd = read_data(config)
 
         todos, inprogs, dones = split_items(config, dd)
-        if 'limits' in config and 'todo' in config['limits'] and int(config['limits']['todo']) <= len(todos):
+        if ('limits' in config and 'todo' in config['limits'] and
+                int(config['limits']['todo']) <= len(todos)):
             click.echo('No new todos, limit reached already.')
         else:
             od = collections.OrderedDict(sorted(dd['data'].items()))
             new_id = 1
             if bool(od):
-                new_id = next(reversed(od))+1
-                dd['data'].update({new_id:['todo', task, timestamp(), timestamp()]})
-            else:
-                dd['data'].update({1:['todo', task, timestamp(), timestamp()]})
+                new_id = next(reversed(od)) + 1
+            entry = ['todo', task, timestamp(), timestamp()]
+            dd['data'].update({new_id: entry})
 
             click.echo("Creating new task w/ id: %d -> %s" % (new_id, task))
-
             write_data(config, dd)
 
+
 @clikan.command()
-@click.option('--id', prompt=True)
-def remove(id):
-    """Remove task from clikan"""
+@click.argument('id')
+def delete(id):
+    """Delete task"""
     config = read_config_yaml()
     dd = read_data(config)
     item = dd['data'].get(int(id))
@@ -129,8 +148,9 @@ def remove(id):
         write_data(config, dd)
         click.echo('Removed task %d.' % int(id))
 
+
 @clikan.command()
-@click.option('--id', prompt=True)
+@click.argument('id')
 def promote(id):
     """Promote task"""
     config = read_config_yaml()
@@ -139,7 +159,8 @@ def promote(id):
 
     item = dd['data'].get(int(id))
     if item[0] == 'todo':
-        if 'limits' in config and 'wip' in config['limits'] and int(config['limits']['wip']) <= len(inprogs):
+        if ('limits' in config and 'wip' in config['limits'] and
+                int(config['limits']['wip']) <= len(inprogs)):
             click.echo('No new tasks, limit reached already.')
         else:
             click.echo('Promoting task %s to in-progress.' % id)
@@ -152,8 +173,9 @@ def promote(id):
     else:
         click.echo('Already done, can not promote %s' % id)
 
+
 @clikan.command()
-@click.option('--id', prompt=True)
+@click.argument('id')
 def regress(id):
     """Regress task"""
     config = read_config_yaml()
@@ -170,9 +192,10 @@ def regress(id):
     else:
         click.echo('Already in todo, can not regress %s' % id)
 
+
 @clikan.command()
-def display():
-    """clikan display"""
+def show():
+    """Show tasks in clikan"""
 
     config = read_config_yaml()
 
@@ -191,41 +214,29 @@ def display():
 
     td = [
         ['todo', 'in-progress', 'done'],
-        ['','',''],
+        ['', '', ''],
     ]
 
     table = SingleTable(td, 'clikan')
     table.inner_heading_row_border = False
     table.inner_row_border = True
     table.justify_columns = {0: 'center', 1: 'center', 2: 'center'}
-    #table.padding_left = 5
-    #table.padding_right = 5
+    # table.padding_left = 5
+    # table.padding_right = 5
 
-    # todos wrapping
-    max_width = table.column_max_width(0)
+    def wrap_lines(lines, column_index):
+        max_width = table.column_max_width(column_index)
+        packed = [line for line in lines if line.strip() != '']
+        wrapped = [wrap(line, max_width, break_long_words=False,
+                      replace_whitespace=False) for line in packed]
+        return '\n'.join(['\n'.join(w) for w in wrapped])
 
-    wrapped_string = '\n'.join(['\n'.join(wrap(line, max_width,
-                 break_long_words=False, replace_whitespace=False))
-                 for line in todos.splitlines() if line.strip() != ''])
-
-    table.table_data[1][0] = wrapped_string
-
-    # inprogs wrapping
-    max_width = table.column_max_width(1)
-    wrapped_inprogs = '\n'.join(['\n'.join(wrap(line, max_width,
-                 break_long_words=False, replace_whitespace=False))
-                 for line in inprogs.splitlines() if line.strip() != ''])
-    table.table_data[1][1] = wrapped_inprogs
-
-    # dones wrapping
-    max_width = table.column_max_width(2)
-    wrapped_dones = '\n'.join(['\n'.join(wrap(line, max_width,
-                 break_long_words=False, replace_whitespace=False))
-                 for line in dones.splitlines() if line.strip() != ''])
-    table.table_data[1][2] = wrapped_dones
+    for index, section in enumerate((todos, inprogs, dones)):
+        table.table_data[1][index] = wrap_lines(section.splitlines(), index)
 
     print(table.table)
 #    write_data(config, dd)
+
 
 def read_data(config):
     """Read the existing data from the config datasource"""
@@ -234,13 +245,15 @@ def read_data(config):
             try:
                 return yaml.load(stream, Loader=yaml.FullLoader)
             except yaml.YAMLError as exc:
-                print("Ensure %s exists, as you specified it as the clikan data file." % config['clikan_data'])
+                print("Ensure %s exists, as you specified it "
+                      "as the clikan data file." % config['clikan_data'])
                 print(exc)
-    except IOError as exc:
+    except IOError:
         click.echo("No data, initializing data file.")
-        write_data(config, {"data":{},"deleted":{}})
+        write_data(config, {"data": {}, "deleted": {}})
         with open(config["clikan_data"], 'r') as stream:
             return yaml.load(stream, Loader=yaml.FullLoader)
+
 
 def write_data(config, data):
     """Write the data to the config datasource"""
@@ -251,15 +264,17 @@ def write_data(config, data):
 def read_config_yaml():
     """Read the app config from ~/.clikan.yaml"""
     try:
-        with open(os.environ['HOME'] + "/.clikan.yaml", 'r') as stream:
+        home = get_clikan_home()
+        with open(home + "/.clikan.yaml", 'r') as stream:
             try:
                 return yaml.load(stream, Loader=yaml.FullLoader)
-            except yaml.YAMLError as exc:
-                print("Ensure ~/.clikan.yaml is valid, expected YAML.")
+            except yaml.YAMLError:
+                print("Ensure %s/.clikan.yaml is valid, expected YAML." % home)
                 sys.exit()
-    except IOError as exc:
-        print("Ensure ~/.clikan.yaml exists and is valid.")
+    except IOError:
+        print("Ensure %s/.clikan.yaml exists and is valid." % home)
         sys.exit()
+
 
 def split_items(config, dd):
     todos = []
@@ -268,13 +283,14 @@ def split_items(config, dd):
 
     for key, value in dd['data'].items():
         if value[0] == 'todo':
-            todos.append( "[%d] %s" % (key, value[1]) )
+            todos.append("[%d] %s" % (key, value[1]))
         elif value[0] == 'inprogress':
-            inprogs.append( "[%d] %s" % (key, value[1]) )
+            inprogs.append("[%d] %s" % (key, value[1]))
         else:
-            dones.insert( 0, "[%d] %s" % (key, value[1]) )
+            dones.insert(0, "[%d] %s" % (key, value[1]))
 
     return todos, inprogs, dones
+
 
 def timestamp():
     return '{:%Y-%b-%d %H:%M:%S}'.format(datetime.datetime.now())
