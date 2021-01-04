@@ -6,7 +6,7 @@ version = version_file.read().strip()
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setup (
+setup(
     author="Kit Plummer",
     author_email="kitplummer@gmail.com",
     name="clikan",
@@ -17,6 +17,7 @@ setup (
     py_modules=['clikan'],
     install_requires=[
         'Click',
+        'click-default-group',
         'pyyaml',
         'terminaltables'
     ],
