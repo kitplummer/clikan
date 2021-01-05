@@ -4,14 +4,12 @@
 name: Python package deploy
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - main
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
