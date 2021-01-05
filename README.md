@@ -74,6 +74,8 @@ Tests?  Um, yeah.
 
 ### Testing
 
+Updated test suite to include 3.6-3.9 on Windows, macOS and Ubuntu.
+
 ***Definitely*** need some help here.  There is a basic test suite available in `clikan_test.py`.
 
 To run it, make sure ~/.clikan.dat is empty, the you can run:
