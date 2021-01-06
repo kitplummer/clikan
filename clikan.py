@@ -1,4 +1,5 @@
 import click
+from click_default_group import DefaultGroup
 import yaml
 import os
 from terminaltables import SingleTable
@@ -31,7 +32,7 @@ class Config(object):
 pass_config = click.make_pass_decorator(Config, ensure=True)
 
 
-class AliasedGroup(click.Group):
+class AliasedGroup(DefaultGroup):
     """This subclass of a group supports looking up aliases in a config
     file and with a bit of magic.
     """
@@ -78,16 +79,9 @@ def read_config(ctx, param, value):
 
 
 @click.version_option(VERSION)
-@click.command(cls=AliasedGroup)
+@click.command(cls=AliasedGroup, default='show', default_if_no_args=True)
 def clikan():
     """clikan: CLI personal kanban """
-
-
-def get_clikan_home():
-    home = os.environ.get('CLIKAN_HOME')
-    if not home:
-        home = os.path.expanduser('~')
-    return home
 
 
 @clikan.command()
@@ -196,13 +190,9 @@ def regress(id):
 @clikan.command()
 def show():
     """Show tasks in clikan"""
-
     config = read_config_yaml()
-
     dd = read_data(config)
-
     todos, inprogs, dones = split_items(config, dd)
-
     if 'limits' in config and 'done' in config['limits']:
         dones = dones[0:int(config['limits']['done'])]
     else:
@@ -217,25 +207,22 @@ def show():
         ['', '', ''],
     ]
 
-    table = SingleTable(td, 'clikan')
+    table = SingleTable(td, 'clikan v.{}'.format(VERSION))
     table.inner_heading_row_border = False
     table.inner_row_border = True
     table.justify_columns = {0: 'center', 1: 'center', 2: 'center'}
-    # table.padding_left = 5
-    # table.padding_right = 5
 
     def wrap_lines(lines, column_index):
         max_width = table.column_max_width(column_index)
         packed = [line for line in lines if line.strip() != '']
         wrapped = [wrap(line, max_width, break_long_words=False,
-                      replace_whitespace=False) for line in packed]
+                        replace_whitespace=False) for line in packed]
         return '\n'.join(['\n'.join(w) for w in wrapped])
 
     for index, section in enumerate((todos, inprogs, dones)):
         table.table_data[1][index] = wrap_lines(section.splitlines(), index)
 
     print(table.table)
-#    write_data(config, dd)
 
 
 def read_data(config):
@@ -259,6 +246,13 @@ def write_data(config, data):
     """Write the data to the config datasource"""
     with open(config["clikan_data"], 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
+
+
+def get_clikan_home():
+    home = os.environ.get('CLIKAN_HOME')
+    if not home:
+        home = os.path.expanduser('~')
+    return home
 
 
 def read_config_yaml():

@@ -1,3 +1,4 @@
-click>=7.1.2
+Click>=7.1.2
+click-default-group>=1.2.2
 PyYAML>=5.3.1
 terminaltables>=3.1.0

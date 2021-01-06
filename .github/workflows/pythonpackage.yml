@@ -27,6 +27,7 @@ jobs:
         architecture: x64
     - name: Setup setup.py
       run: |
+        pip install -r requirements.txt
         python setup.py install
     - name: Lint with flake8
       run: |
