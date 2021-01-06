@@ -251,7 +251,7 @@ def write_data(config, data):
 def get_clikan_home():
     home = os.environ.get('CLIKAN_HOME')
     if not home:
-        home = os.environ.get('HOME')
+        home = os.path.expanduser('~')
     return home
 
 
