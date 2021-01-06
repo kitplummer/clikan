@@ -42,6 +42,12 @@ def test_command_a():
     assert 'n_--task_test' in result.output
 
 ## Show Tests
+def test_no_command():
+    runner = CliRunner()
+    result = runner.invoke(clikan, [])
+    assert result.exit_code == 0
+    assert 'n_--task_test' in result.output
+
 def test_command_s():
     runner = CliRunner()
     result = runner.invoke(clikan, ["s"])
