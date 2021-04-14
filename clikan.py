@@ -1,8 +1,11 @@
+from rich import print
+from rich.console import Console
+from rich.table import Table
 import click
 from click_default_group import DefaultGroup
 import yaml
 import os
-from terminaltables import SingleTable
+##from terminaltables import SingleTable
 import sys
 from textwrap import wrap
 import collections
@@ -189,6 +192,7 @@ def regress(id):
 
 @clikan.command()
 def show():
+    console = Console()
     """Show tasks in clikan"""
     config = read_config_yaml()
     dd = read_data(config)
@@ -202,27 +206,33 @@ def show():
     inprogs = '\n'.join([str(x) for x in inprogs])
     dones = '\n'.join([str(x) for x in dones])
 
-    td = [
-        ['todo', 'in-progress', 'done'],
-        ['', '', ''],
-    ]
+    # td = [
+    #     ['todo', 'in-progress', '[bold magenta]done[/bold magenta]'],
+    #     ['', '', ''],
+    # ]
 
-    table = SingleTable(td, 'clikan v.{}'.format(VERSION))
-    table.inner_heading_row_border = False
-    table.inner_row_border = True
-    table.justify_columns = {0: 'center', 1: 'center', 2: 'center'}
+    #table = SingleTable(td, 'clikan v.{}'.format(VERSION))
+    # table.inner_heading_row_border = False
+    # table.inner_row_border = True
+    # table.justify_columns = {0: 'center', 1: 'center', 2: 'center'}
 
-    def wrap_lines(lines, column_index):
-        max_width = table.column_max_width(column_index)
-        packed = [line for line in lines if line.strip() != '']
-        wrapped = [wrap(line, max_width, break_long_words=False,
-                        replace_whitespace=False) for line in packed]
-        return '\n'.join(['\n'.join(w) for w in wrapped])
+    table = Table(show_header=True, show_footer=True)
+    table.add_column("[bold yellow]todo[/bold yellow]", no_wrap=True, footer="clikan")
+    table.add_column('[bold green]in-progress[/bold green]', no_wrap=True)
+    table.add_column('[bold magenta]done[/bold magenta]', no_wrap=True, footer="v.{}".format(VERSION))
 
-    for index, section in enumerate((todos, inprogs, dones)):
-        table.table_data[1][index] = wrap_lines(section.splitlines(), index)
+    # def wrap_lines(lines, column_index):
+    #     max_width = table.column_max_width(column_index)
+    #     packed = [line for line in lines if line.strip() != '']
+    #     wrapped = [wrap(line, max_width, break_long_words=False,
+    #                     replace_whitespace=False) for line in packed]
+    #     return '\n'.join(['\n'.join(w) for w in wrapped])
 
-    print(table.table)
+    # for index, section in enumerate((todos, inprogs, dones)):
+    #     table.table_data[1][index] = wrap_lines(section.splitlines(), index)
+    table.add_row(todos, inprogs, dones)
+    console.print(table)
+    #print(table.table)
 
 
 def read_data(config):

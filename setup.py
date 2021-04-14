@@ -19,7 +19,7 @@ setup(
         'Click',
         'click-default-group',
         'pyyaml',
-        'terminaltables'
+        'rich'
     ],
     entry_points='''
         [console_scripts]
