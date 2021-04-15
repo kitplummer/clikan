@@ -10,6 +10,7 @@ setup(
     author="Kit Plummer",
     author_email="kitplummer@gmail.com",
     name="clikan",
+    url="https://github.com/kitplummer/clikan",
     version=version,
     description="Simple CLI-based Kanban board",
     long_description=long_description,
