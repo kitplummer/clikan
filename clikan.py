@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-from rich import print
-from rich.console import Console
-from rich.table import Table
-import click
-from click_default_group import DefaultGroup
-import yaml
+import collections
+import configparser
+import datetime
 import os
-
 ##from terminaltables import SingleTable
 import sys
 from textwrap import wrap
-import collections
-import datetime
-import configparser
+
+import click
 import pkg_resources  # part of setuptools
+import yaml
+from click_default_group import DefaultGroup
+from rich import print
+from rich.console import Console
+from rich.table import Table
 
 VERSION = pkg_resources.require("clikan")[0].version
 
