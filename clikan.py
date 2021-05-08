@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+""" It is main file. """
 import collections
 import configparser
 import datetime
@@ -9,7 +10,7 @@ import click
 import pkg_resources
 import yaml
 from click_default_group import DefaultGroup
-from rich import print
+from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
 
@@ -241,8 +242,8 @@ def show():
     # for index, section in enumerate((todos, inprogs, dones)):
     #     table.table_data[1][index] = wrap_lines(section.splitlines(), index)
     table.add_row(todos, inprogs, dones)
-    console.print(table)
-    # print(table.table)
+    console.rprint(table)
+    # rprint(table.table)
 
 
 def read_data(config):
@@ -252,11 +253,11 @@ def read_data(config):
             try:
                 return yaml.load(stream, Loader=yaml.FullLoader)
             except yaml.YAMLError as exc:
-                print(
+                rprint(
                     "Ensure %s exists, as you specified it "
                     "as the clikan data file." % config["clikan_data"]
                 )
-                print(exc)
+                rprint(exc)
     except IOError:
         click.echo("No data, initializing data file.")
         write_data(config, {"data": {}, "deleted": {}})
@@ -285,10 +286,10 @@ def read_config_yaml():
             try:
                 return yaml.load(stream, Loader=yaml.FullLoader)
             except yaml.YAMLError:
-                print("Ensure %s/.clikan.yaml is valid, expected YAML." % home)
+                rprint("Ensure %s/.clikan.yaml is valid, expected YAML." % home)
                 sys.exit()
     except IOError:
-        print("Ensure %s/.clikan.yaml exists and is valid." % home)
+        rprint("Ensure %s/.clikan.yaml exists and is valid." % home)
         sys.exit()
 
 
