@@ -3,12 +3,10 @@ import collections
 import configparser
 import datetime
 import os
-##from terminaltables import SingleTable
 import sys
-from textwrap import wrap
 
 import click
-import pkg_resources  # part of setuptools
+import pkg_resources
 import yaml
 from click_default_group import DefaultGroup
 from rich import print
