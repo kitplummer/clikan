@@ -56,7 +56,7 @@ $`clikan regress [task id]`
 
 ### Delete
 
-$`clikan delete [task id]`
+$`clikan delete [task id]` (alias: d)
 
 ### Configure
 
