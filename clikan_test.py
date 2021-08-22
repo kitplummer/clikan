@@ -2,7 +2,7 @@
 
 import click
 from click.testing import CliRunner
-from clikan import configure, clikan, add, promote, show, regress, delete
+from clikan import configure, clikan, add, promote, show, regress, delete, get_clikan_home
 import os
 
 ## Configure Tests
@@ -24,6 +24,8 @@ def test_command_version():
     assert 'clikan, version {}'.format(version) in result.output
 
 def test_command_configure():
+    home   = get_clikan_home()
+    os.remove(home+"/.clikan.yaml")
     runner = CliRunner()
     result = runner.invoke(clikan, ["configure"])
     assert result.exit_code == 0
