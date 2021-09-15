@@ -134,17 +134,19 @@ def delete(id):
     """Delete task"""
     config = read_config_yaml()
     dd = read_data(config)
-    item = dd['data'].get(int(id))
-    if item is None:
-        click.echo('No existing task with that id.')
-    else:
-        item[0] = 'deleted'
-        item[2] = timestamp()
-        dd['deleted'].update({int(id): item})
-        dd['data'].pop(int(id))
-        write_data(config, dd)
-        click.echo('Removed task %d.' % int(id))
-
+    try:
+        item = dd['data'].get(int(id))
+        if item is None:
+            click.echo('No existing task with that id.')
+        else:
+            item[0] = 'deleted'
+            item[2] = timestamp()
+            dd['deleted'].update({int(id): item})
+            dd['data'].pop(int(id))
+            write_data(config, dd)
+            click.echo('Removed task %d.' % int(id))
+    except ValueError:
+        click.echo('Invalid task id')
 
 @clikan.command()
 @click.argument('id')
