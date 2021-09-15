@@ -154,21 +154,26 @@ def promote(id):
     dd = read_data(config)
     todos, inprogs, dones = split_items(config, dd)
 
-    item = dd['data'].get(int(id))
-    if item[0] == 'todo':
-        if ('limits' in config and 'wip' in config['limits'] and
-                int(config['limits']['wip']) <= len(inprogs)):
-            click.echo('No new tasks, limit reached already.')
-        else:
-            click.echo('Promoting task %s to in-progress.' % id)
-            dd['data'][int(id)] = ['inprogress', item[1], timestamp(), item[3]]
+    try:
+        item = dd['data'].get(int(id))
+        if item[0] == 'todo':
+            if ('limits' in config and 'wip' in config['limits'] and
+                    int(config['limits']['wip']) <= len(inprogs)):
+                click.echo('Can not promote, in-progress limit of %s reached.' % config['limits']['wip'])
+            else:
+                click.echo('Promoting task %s to in-progress.' % id)
+                dd['data'][int(id)] = ['inprogress', item[1], timestamp(), item[3]]
+                write_data(config, dd)
+        elif item[0] == 'inprogress':
+            click.echo('Promoting task %s to done.' % id)
+            dd['data'][int(id)] = ['done', item[1], timestamp(), item[3]]
             write_data(config, dd)
-    elif item[0] == 'inprogress':
-        click.echo('Promoting task %s to done.' % id)
-        dd['data'][int(id)] = ['done', item[1], timestamp(), item[3]]
-        write_data(config, dd)
-    else:
-        click.echo('Already done, can not promote %s' % id)
+        else:
+            click.echo('Can not promote %s, already done.' % id)
+    except ValueError:
+        click.echo('Invalid task id')
+
+
 
 
 @clikan.command()
@@ -240,7 +245,7 @@ def read_data(config):
     try:
         with open(config["clikan_data"], 'r') as stream:
             try:
-                return yaml.load(stream, Loader=yaml.FullLoader)
+                return yaml.safe_load(stream)
             except yaml.YAMLError as exc:
                 print("Ensure %s exists, as you specified it "
                       "as the clikan data file." % config['clikan_data'])
@@ -249,7 +254,7 @@ def read_data(config):
         click.echo("No data, initializing data file.")
         write_data(config, {"data": {}, "deleted": {}})
         with open(config["clikan_data"], 'r') as stream:
-            return yaml.load(stream, Loader=yaml.FullLoader)
+            return yaml.safe_load(stream)
 
 
 def write_data(config, data):
@@ -271,7 +276,7 @@ def read_config_yaml():
         home = get_clikan_home()
         with open(home + "/.clikan.yaml", 'r') as stream:
             try:
-                return yaml.load(stream, Loader=yaml.FullLoader)
+                return yaml.safe_load(stream)
             except yaml.YAMLError:
                 print("Ensure %s/.clikan.yaml is valid, expected YAML." % home)
                 sys.exit()

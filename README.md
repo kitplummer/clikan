@@ -7,6 +7,10 @@ There has been a little chatter about 'personal' kanban on the tubes lately.  I 
 
 $`pip install clikan`
 
+### Alternative Installation with Guix
+
+$`guix install clikan`
+
 ### Create a `.clikan.yaml` in your $HOME directory
 
 ```yaml
@@ -56,7 +60,7 @@ $`clikan regress [task id]`
 
 ### Delete
 
-$`clikan delete [task id]`
+$`clikan delete [task id]` (alias: d)
 
 ### Configure
 

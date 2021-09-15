@@ -22,6 +22,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: x64
+    - name: Set variables
+      run: |
+        VER=$(cat VERSION)
+        echo "VERSION=$VER" >> $GITHUB_ENV
+        HASH=$(git rev-parse --short "$GITHUB_SHA")
+        echo "COMMIT_HASH=$HASH" >> $GITHUB_ENV
     - name: Setup setup.py
       run: |
         pip install -r requirements.txt
@@ -41,8 +47,20 @@ jobs:
       run: |
         pip install setuptools wheel twine
         python setup.py sdist bdist_wheel
+    - name: Create tag
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{ github.token }}
+        script: |
+          github.git.createRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "refs/tags/${{ env.VERSION }}.${{ env.COMMIT_HASH }}",
+            sha: context.sha
+          })
     - name: Publish a Python distribution to PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__
         password: ${{ secrets.pypi_password }}
+    
