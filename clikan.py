@@ -245,7 +245,7 @@ def read_data(config):
     try:
         with open(config["clikan_data"], 'r') as stream:
             try:
-                return yaml.load(stream, Loader=yaml.FullLoader)
+                return yaml.safe_load(stream)
             except yaml.YAMLError as exc:
                 print("Ensure %s exists, as you specified it "
                       "as the clikan data file." % config['clikan_data'])
@@ -254,7 +254,7 @@ def read_data(config):
         click.echo("No data, initializing data file.")
         write_data(config, {"data": {}, "deleted": {}})
         with open(config["clikan_data"], 'r') as stream:
-            return yaml.load(stream, Loader=yaml.FullLoader)
+            return yaml.safe_load(stream)
 
 
 def write_data(config, data):
@@ -276,7 +276,7 @@ def read_config_yaml():
         home = get_clikan_home()
         with open(home + "/.clikan.yaml", 'r') as stream:
             try:
-                return yaml.load(stream, Loader=yaml.FullLoader)
+                return yaml.safe_load(stream)
             except yaml.YAMLError:
                 print("Ensure %s/.clikan.yaml is valid, expected YAML." % home)
                 sys.exit()
