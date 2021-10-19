@@ -5,7 +5,6 @@ import click
 from click_default_group import DefaultGroup
 import yaml
 import os
-##from terminaltables import SingleTable
 import sys
 from textwrap import wrap
 import collections
@@ -103,8 +102,9 @@ def configure():
 
 
 @clikan.command()
+@click.pass_context
 @click.argument('task')
-def add(task):
+def add(ctx, task):
     """Add a task in todo"""
     if len(task) > 40:
         click.echo('Task must be shorter than 40 chars. Brevity counts.')
@@ -123,10 +123,9 @@ def add(task):
                 new_id = next(reversed(od)) + 1
             entry = ['todo', task, timestamp(), timestamp()]
             dd['data'].update({new_id: entry})
-
             click.echo("Creating new task w/ id: %d -> %s" % (new_id, task))
             write_data(config, dd)
-
+            if ('repaint' in config and config['repaint']): display()
 
 @clikan.command()
 @click.argument('id')
@@ -145,6 +144,7 @@ def delete(id):
             dd['data'].pop(int(id))
             write_data(config, dd)
             click.echo('Removed task %d.' % int(id))
+            if ('repaint' in config and config['repaint']): display()
     except ValueError:
         click.echo('Invalid task id')
 
@@ -166,17 +166,16 @@ def promote(id):
                 click.echo('Promoting task %s to in-progress.' % id)
                 dd['data'][int(id)] = ['inprogress', item[1], timestamp(), item[3]]
                 write_data(config, dd)
+                if ('repaint' in config and config['repaint']): display()
         elif item[0] == 'inprogress':
             click.echo('Promoting task %s to done.' % id)
             dd['data'][int(id)] = ['done', item[1], timestamp(), item[3]]
             write_data(config, dd)
+            if ('repaint' in config and config['repaint']): display()
         else:
             click.echo('Can not promote %s, already done.' % id)
     except ValueError:
         click.echo('Invalid task id')
-
-
-
 
 @clikan.command()
 @click.argument('id')
@@ -189,16 +188,17 @@ def regress(id):
         click.echo('Regressing task %s to in-progress.' % id)
         dd['data'][int(id)] = ['inprogress', item[1], timestamp(), item[3]]
         write_data(config, dd)
+        if ('repaint' in config and config['repaint']): display()
     elif item[0] == 'inprogress':
         click.echo('Regressing task %s to todo.' % id)
         dd['data'][int(id)] = ['todo', item[1], timestamp(), item[3]]
         write_data(config, dd)
+        if ('repaint' in config and config['repaint']): display()
     else:
         click.echo('Already in todo, can not regress %s' % id)
 
-
-@clikan.command()
-def show():
+# Use a non-Click function to allow for repaint to work.
+def display():
     console = Console()
     """Show tasks in clikan"""
     config = read_config_yaml()
@@ -213,34 +213,17 @@ def show():
     inprogs = '\n'.join([str(x) for x in inprogs])
     dones = '\n'.join([str(x) for x in dones])
 
-    # td = [
-    #     ['todo', 'in-progress', '[bold magenta]done[/bold magenta]'],
-    #     ['', '', ''],
-    # ]
-
-    #table = SingleTable(td, 'clikan v.{}'.format(VERSION))
-    # table.inner_heading_row_border = False
-    # table.inner_row_border = True
-    # table.justify_columns = {0: 'center', 1: 'center', 2: 'center'}
-
     table = Table(show_header=True, show_footer=True)
     table.add_column("[bold yellow]todo[/bold yellow]", no_wrap=True, footer="clikan")
     table.add_column('[bold green]in-progress[/bold green]', no_wrap=True)
     table.add_column('[bold magenta]done[/bold magenta]', no_wrap=True, footer="v.{}".format(VERSION))
 
-    # def wrap_lines(lines, column_index):
-    #     max_width = table.column_max_width(column_index)
-    #     packed = [line for line in lines if line.strip() != '']
-    #     wrapped = [wrap(line, max_width, break_long_words=False,
-    #                     replace_whitespace=False) for line in packed]
-    #     return '\n'.join(['\n'.join(w) for w in wrapped])
-
-    # for index, section in enumerate((todos, inprogs, dones)):
-    #     table.table_data[1][index] = wrap_lines(section.splitlines(), index)
     table.add_row(todos, inprogs, dones)
     console.print(table)
-    #print(table.table)
 
+@clikan.command()
+def show():
+    display()
 
 def read_data(config):
     """Read the existing data from the config datasource"""
@@ -258,19 +241,16 @@ def read_data(config):
         with open(config["clikan_data"], 'r') as stream:
             return yaml.safe_load(stream)
 
-
 def write_data(config, data):
     """Write the data to the config datasource"""
     with open(config["clikan_data"], 'w') as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
-
 
 def get_clikan_home():
     home = os.environ.get('CLIKAN_HOME')
     if not home:
         home = os.path.expanduser('~')
     return home
-
 
 def read_config_yaml():
     """Read the app config from ~/.clikan.yaml"""
@@ -285,7 +265,6 @@ def read_config_yaml():
     except IOError:
         print("Ensure %s/.clikan.yaml exists and is valid." % home)
         sys.exit()
-
 
 def split_items(config, dd):
     todos = []
