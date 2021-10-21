@@ -36,7 +36,9 @@ def test_command_configure(tmp_path):
 def test_command_configure_existing():
     runner = CliRunner()
     with runner.isolated_filesystem():
+        runner.invoke(clikan, ["configure"])
         result = runner.invoke(clikan, ["configure"])
+
         assert 'Config file exists' in result.output
 
 ## New Tests
