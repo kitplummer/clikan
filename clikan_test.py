@@ -98,7 +98,7 @@ def test_repaint_config_option():
     runner = CliRunner()
     version_file = open(os.path.join('./', 'VERSION'))
     version = version_file.read().strip()
-    path_to_config = str(pathlib.Path("./tests/repaint"))
+    path_to_config = str(pathlib.Path("./tests/repaint").resolve())
     print(path_to_config)
     with runner.isolation(input=None, env={"CLIKAN_HOME" : path_to_config}, color=False):
         result = runner.invoke(clikan, [])
@@ -113,7 +113,7 @@ def test_no_repaint_config_option():
     runner = CliRunner()
     version_file = open(os.path.join('./', 'VERSION'))
     version = version_file.read().strip()
-    path_to_config = str(pathlib.Path("./tests/no_repaint"))
+    path_to_config = str(pathlib.Path("./tests/no_repaint").resolve())
     print(path_to_config)
     with runner.isolation(input=None, env={"CLIKAN_HOME" : path_to_config}, color=False):
         result = runner.invoke(clikan, [])
