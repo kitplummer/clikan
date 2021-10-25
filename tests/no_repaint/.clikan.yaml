@@ -1,2 +1,2 @@
-clikan_data: /tmp/.clikan.dat
+clikan_data: tests/no_repaint/.clikan.dat
 repaint: false
