@@ -5,11 +5,11 @@ There has been a little chatter about 'personal' kanban on the tubes lately.  I 
 
 ## Installation
 
-$`pip install clikan`
+$ `pip install clikan`
 
 ### Alternative Installation with Guix
 
-$`guix install clikan`
+$ `guix install clikan`
 
 ### Create a `.clikan.yaml` in your $HOME directory
 
@@ -20,16 +20,18 @@ limits:
   todo: 10
   wip: 3
   done: 10
+repaint: true
 ```
 
 * `clikan_data` is the datastore file location.
 * `limits:todo` is the max number of items allowed in the todo column, keep this small - you want a smart list, not an ice box of ideas here.
 * `limits:wip` is the max number of items allowed in in-progress at a given time.  Context-switching is a farce, focus on one or two tasks at a time.
 * `limits:done` is the max number of done items visible, they'll still be stored.  It's good to see a list of done items, for pure psyche.
+* `repaint` is used to tell `clikan` to show the display after every successful command - default is false/off.
 
 -- or --
 
-$`clikan configure`
+$ `clikan configure`
 
 to create a default data file location.
 
@@ -42,29 +44,29 @@ The basic usage of clikan breaks down into three basic commands:
 
 ### Show
 
-$`clikan show` (alias: s)
+$ `clikan show` (alias: s)
 
 ### Add
 
-$`clikan add [task text]` (alias: a)
+$ `clikan add [task text]` (alias: a)
 
 ### Promote
 
-$`clikan promote [task id]` (alias: p)
+$ `clikan promote [task id]` (alias: p)
 
 And there are more supporting commands:
 
 ### Regress
 
-$`clikan regress [task id]`
+$ `clikan regress [task id]`
 
 ### Delete
 
-$`clikan delete [task id]` (alias: d)
+$ `clikan delete [task id]` (alias: d)
 
 ### Configure
 
-$`clikan configure`
+$ `clikan configure`
 
 ### Screenshot
 
@@ -82,20 +84,19 @@ Updated test suite to include 3.6-3.9 on Windows, macOS and Ubuntu.
 
 ***Definitely*** need some help here.  There is a basic test suite available in `clikan_test.py`.
 
-To run it, make sure ~/.clikan.dat is empty, the you can run:
-
-```
-pytest clikan_test.py
-```
-
-If you don't want to whack your **working** version of clikan you do this:
+To run it, make sure ~/.clikan.dat is empty, or specify a test locale
+with the `CLIKAN_HOME` environment variable the you can run:
 
 ```
 CLIKAN_HOME=/tmp pytest clikan_test.py
 ```
 
+The project uses this environment variable feature to test different functional configuration scenarios internally to the test suite.
+
+Am considering adding the `--config_file` feature to allow for specifying the path to the config file as well.  If this is something you're interesting in or believe would be beneficial let me know through an Github issue.
 ## License
 
+```
 MIT License
 
 Copyright 2018 Kit Plummer
@@ -105,6 +106,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
 
 ## Support
 
