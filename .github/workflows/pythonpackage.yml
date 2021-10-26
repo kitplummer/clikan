@@ -42,7 +42,7 @@ jobs:
         pip install pytest
         pytest clikan_test.py
     - uses: rzr/fediverse-action@master
-        with:
-          access-token: ${{ secrets.MASTODON_ACCESS_TOKEN }}
-          message: "https://github.com/${{ github.repository }}/commit/${{ steps.log.outputs.message }} ~ #FediVerseAction"
+      with:
+        access-token: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+        message: "https://github.com/${{ github.repository }}/commit/${{ steps.log.outputs.message }} ~ #FediVerseAction"
 
