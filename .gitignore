@@ -1,4 +1,4 @@
-.clikan.yaml
+.clikan.dat
 build/
 clikan.egg-info/
 clikan.pyc
@@ -9,3 +9,4 @@ venv3/
 .cache/
 .pytest_cache/
 __pycache__/
+.vscode
