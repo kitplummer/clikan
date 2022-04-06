@@ -114,7 +114,7 @@ def add(task):
         taskname_length = 40
 
     if len(task) > taskname_length:
-        click.echo('Task must be shorter than %s chars. Brevity counts.' % taskname_length)
+        click.echo('Task must be at most %s chars. Brevity counts.' % taskname_length)
     else:
         todos, inprogs, dones = split_items(config, dd)
         if ('limits' in config and 'todo' in config['limits'] and
