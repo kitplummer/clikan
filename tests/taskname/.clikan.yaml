@@ -1,0 +1,3 @@
+clikan_data: tests/taskname/.clikan.dat
+limits:
+  taskname: 80
