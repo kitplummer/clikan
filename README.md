@@ -20,6 +20,7 @@ limits:
   todo: 10
   wip: 3
   done: 10
+  taskname: 40
 repaint: true
 ```
 
@@ -27,6 +28,7 @@ repaint: true
 * `limits:todo` is the max number of items allowed in the todo column, keep this small - you want a smart list, not an ice box of ideas here.
 * `limits:wip` is the max number of items allowed in in-progress at a given time.  Context-switching is a farce, focus on one or two tasks at a time.
 * `limits:done` is the max number of done items visible, they'll still be stored.  It's good to see a list of done items, for pure psyche.
+* `limits:taskname` is the max length of a task text.
 * `repaint` is used to tell `clikan` to show the display after every successful command - default is false/off.
 
 -- or --

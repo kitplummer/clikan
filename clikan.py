@@ -105,12 +105,17 @@ def configure():
 @click.argument('task')
 def add(task):
     """Add a task in todo"""
-    if len(task) > 40:
-        click.echo('Task must be shorter than 40 chars. Brevity counts.')
-    else:
-        config = read_config_yaml()
-        dd = read_data(config)
+    config = read_config_yaml()
+    dd = read_data(config)
 
+    if ('limits' in config and 'taskname' in config['limits']):
+        taskname_length = config['limits']['taskname']
+    else:
+        taskname_length = 40
+
+    if len(task) > taskname_length:
+        click.echo('Task must be at most %s chars. Brevity counts.' % taskname_length)
+    else:
         todos, inprogs, dones = split_items(config, dd)
         if ('limits' in config and 'todo' in config['limits'] and
                 int(config['limits']['todo']) <= len(todos)):
