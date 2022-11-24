@@ -167,7 +167,9 @@ def promote(id):
 
     try:
         item = dd['data'].get(int(id))
-        if item[0] == 'todo':
+        if item == None:
+            click.echo('No existing task with that id.')
+        elif item[0] == 'todo':
             if ('limits' in config and 'wip' in config['limits'] and
                     int(config['limits']['wip']) <= len(inprogs)):
                 click.echo(
@@ -203,7 +205,9 @@ def regress(id):
     config = read_config_yaml()
     dd = read_data(config)
     item = dd['data'].get(int(id))
-    if item[0] == 'done':
+    if item == None:
+        click.echo('No existing task with that id.')
+    elif item[0] == 'done':
         click.echo('Regressing task %s to in-progress.' % id)
         dd['data'][int(id)] = ['inprogress', item[1], timestamp(), item[3]]
         write_data(config, dd)
