@@ -129,7 +129,7 @@ def add(tasks):
                     new_id = next(reversed(od)) + 1
                 entry = ['todo', task, timestamp(), timestamp()]
                 dd['data'].update({new_id: entry})
-                click.echo("Creating new task w/ id: %d -> %s" 
+                click.echo("Creating new task w/ id: %d -> %s"
                            % (new_id, task))
 
     write_data(config, dd)
