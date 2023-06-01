@@ -116,7 +116,7 @@ def add(tasks):
     for task in tasks:
         if len(task) > taskname_length:
             click.echo('Task must be at most %s chars, Brevity counts: %s'
-                    % (taskname_length, task))
+                       % (taskname_length, task))
         else:
             todos, inprogs, dones = split_items(config, dd)
             if ('limits' in config and 'todo' in config['limits'] and
@@ -129,8 +129,9 @@ def add(tasks):
                     new_id = next(reversed(od)) + 1
                 entry = ['todo', task, timestamp(), timestamp()]
                 dd['data'].update({new_id: entry})
-                click.echo("Creating new task w/ id: %d -> %s" % (new_id, task))
-    
+                click.echo("Creating new task w/ id: %d -> %s" 
+                           % (new_id, task))
+
     write_data(config, dd)
     if ('repaint' in config and config['repaint']):
         display()
