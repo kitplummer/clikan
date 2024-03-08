@@ -10,10 +10,9 @@ from textwrap import wrap
 import collections
 import datetime
 import configparser
-import pkg_resources  # part of setuptools
+import importlib
 
-VERSION = pkg_resources.require("clikan")[0].version
-
+VERSION = importlib.metadata.version('clikan')
 
 class Config(object):
     """The config in this example only holds aliases."""
