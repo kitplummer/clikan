@@ -61,7 +61,9 @@ jobs:
             sha: context.sha
           })
     - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1.8.14
+      uses: pypa/gh-action-pypi-publish@release/v1.8.14
+      with:
+        repository-url: https://test.pypi.org/legacy/
     - name: Post to Mastodon
       uses: rzr/fediverse-action@master
       with:
