@@ -50,9 +50,9 @@ def test_command_configure_existing():
         assert 'Config file exists' in result.output
 
 
-# New Tests
+## Single Argument Tests
 
-
+# Add Tests
 def test_command_a():
     runner = CliRunner()
     result = runner.invoke(clikan, ["a", "n_--task_test"])
@@ -117,9 +117,63 @@ def test_command_delete():
     assert 'No existing task with' in result.output
 
 
+## Multiple Argument Tests
+
+# Add Tests
+def test_command_a_multi():
+    runner = CliRunner()
+    result = runner.invoke(clikan, ["a", "n_--task_test_multi_1", "n_--task_test_multi_2", "n_--task_test_multi_3"])
+    assert result.exit_code == 0
+    assert 'n_--task_test' in result.output
+
+
+# Show Test
+def test_command_show_multi():
+    runner = CliRunner()
+    result = runner.invoke(show)
+    assert result.exit_code == 0
+    assert 'n_--task_test_multi_1' in result.output
+    assert 'n_--task_test_multi_2' in result.output
+    assert 'n_--task_test_multi_3' in result.output
+
+
+# Promote Tests
+def test_command_promote_multi():
+    runner = CliRunner()
+    result = runner.invoke(clikan, ['promote', '1', '2'])
+    assert result.exit_code == 0
+    assert 'Promoting task 1 to in-progress.' in result.output
+    assert 'Promoting task 2 to in-progress.' in result.output
+    result = runner.invoke(clikan, ['promote', '2', '3'])
+    assert result.exit_code == 0
+    assert 'Promoting task 2 to done.' in result.output
+    assert 'Promoting task 3 to in-progress.' in result.output
+
+
+# Delete Tests
+def test_command_delete_multi():
+    runner = CliRunner()
+    result = runner.invoke(clikan, ['delete', '1', '2'])
+    assert result.exit_code == 0
+    assert 'Removed task 1.' in result.output
+    assert 'Removed task 2.' in result.output
+    result = runner.invoke(clikan, ['delete', '1', '2'])
+    assert result.exit_code == 0
+    assert 'No existing task with that id: 1' in result.output
+    assert 'No existing task with that id: 2' in result.output
+
+
+# Show after delete Test
+def test_command_show_multi_after_delete():
+    runner = CliRunner()
+    result = runner.invoke(show)
+    assert result.exit_code == 0
+    assert 'n_--task_test_multi_1' not in result.output
+    assert 'n_--task_test_multi_2' not in result.output
+    assert 'n_--task_test_multi_3' in result.output
+
+
 # Repaint Tests
-
-
 def test_repaint_config_option():
     runner = CliRunner()
     version_file = open(os.path.join('./', 'VERSION'))
@@ -193,4 +247,4 @@ def test_no_taskname_config_option():
         assert 'clikan' in result.output
         result = runner.invoke(clikan, ["a", "This is a long task name, more than 40 characters (66 to be exact)"])
         assert result.exit_code == 0
-        assert 'Brevity counts.' in result.output
+        assert 'Brevity counts:' in result.output
