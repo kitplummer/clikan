@@ -47,7 +47,7 @@ jobs:
         pytest clikan_test.py
     - name: Create dist
       run: |
-        pip install setuptools wheel twine
+        pip install setuptools wheel twine build
         python -m build 
     - name: Create tag
       uses: actions/github-script@v5
