@@ -14,7 +14,10 @@ jobs:
     strategy:
       matrix:
         python-version: [3.11]
-
+    environment: release
+    permissions:
+      # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -60,9 +63,6 @@ jobs:
           })
     - name: Publish a Python distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.pypi_password }}
     - name: Post to Mastodon
       uses: rzr/fediverse-action@master
       with:
