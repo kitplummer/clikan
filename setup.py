@@ -1,7 +1,8 @@
 from setuptools import setup
 import os
-version_file = open(os.path.join('./', 'VERSION'))
-version = version_file.read().strip()
+
+with open(os.path.join(os.getcwd(), 'VERSION')) as version_file:
+    version = version_file.read().strip()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
