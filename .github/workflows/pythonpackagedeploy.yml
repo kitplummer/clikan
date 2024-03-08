@@ -48,7 +48,7 @@ jobs:
     - name: Create dist
       run: |
         pip install setuptools wheel twine
-        python setup.py sdist bdist_wheel
+        python -m build 
     - name: Create tag
       uses: actions/github-script@v5
       with:
