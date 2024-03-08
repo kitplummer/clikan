@@ -14,6 +14,7 @@ import importlib
 
 VERSION = importlib.metadata.version('clikan')
 
+
 class Config(object):
     """The config in this example only holds aliases."""
 
