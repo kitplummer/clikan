@@ -2,3 +2,4 @@ Click>=8.0.1
 click-default-group>=1.2.2
 PyYAML>=5.3.1
 rich>=9.11.1
+setuptools>=69.1.1
