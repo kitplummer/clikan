@@ -10,9 +10,9 @@ from textwrap import wrap
 import collections
 import datetime
 import configparser
-import importlib
+from importlib.metadata import version
 
-VERSION = importlib.metadata.version('clikan')
+VERSION = version('clikan')
 
 
 class Config(object):
