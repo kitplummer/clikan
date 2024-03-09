@@ -48,7 +48,7 @@ jobs:
     - name: Create dist
       run: |
         pip install build
-        python -m build 
+        python -m build --wheel
     - name: Create tag
       uses: actions/github-script@v5
       with:
