@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.11]
-    environment: release
+    environment: test 
     permissions: write-all
       # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
@@ -47,7 +47,7 @@ jobs:
         pytest clikan_test.py
     - name: Create dist
       run: |
-        pip install setuptools wheel twine build
+        pip install build
         python -m build 
     - name: Create tag
       uses: actions/github-script@v5
@@ -62,6 +62,8 @@ jobs:
           })
     - name: Publish a Python distribution to PyPI
       uses: pypa/gh-action-pypi-publish@v1.8.14
+      with:
+        repository-url: https://test.pypi.org/legacy/
     - name: Post to Mastodon
       uses: rzr/fediverse-action@master
       with:
