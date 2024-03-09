@@ -30,10 +30,9 @@ jobs:
         echo "VERSION=$VER" >> $GITHUB_ENV
         HASH=$(git rev-parse --short "$GITHUB_SHA")
         echo "COMMIT_HASH=$HASH" >> $GITHUB_ENV
-    - name: Setup setup.py
+    - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        python setup.py install
     - name: Lint with flake8
       run: |
         pip install flake8
