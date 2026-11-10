@@ -104,6 +104,24 @@ def test_command_promote():
     assert 'Promoting task 1 to done.' in result.output
 
 
+# Regress Tests
+
+
+def test_command_regress(tmp_path, monkeypatch):
+    monkeypatch.setenv("CLIKAN_HOME", str(tmp_path))
+    runner = CliRunner()
+    result = runner.invoke(clikan, ["configure"])
+    assert result.exit_code == 0
+    result = runner.invoke(clikan, ["add", "regress-me"])
+    assert result.exit_code == 0
+    result = runner.invoke(clikan, ["promote", "1"])
+    assert result.exit_code == 0
+    assert 'Promoting task 1 to in-progress.' in result.output
+    result = runner.invoke(clikan, ["regress", "1"])
+    assert result.exit_code == 0
+    assert 'Regressing task 1 to todo.' in result.output
+
+
 # Delete Tests
 
 

@@ -204,7 +204,7 @@ def promote(ids):
 
 
 @clikan.command()
-@click.argument('id', nargs=-1)
+@click.argument('ids', nargs=-1)
 def regress(ids):
     """Regress task"""
     config = read_config_yaml()
